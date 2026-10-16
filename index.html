@@ -12,6 +12,8 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' rx='44' fill='%230B1030'/%3E%3Cpolygon points='100,22 170,178 132,178 100,104 68,178 30,178' fill='%23FFFFFF'/%3E%3Cpath d='M180.7 92.8 A84 26 -16 0 1 19.3 139.2' fill='none' stroke='%230B1030' stroke-width='30'/%3E%3Cpath d='M180.7 92.8 A84 26 -16 0 1 19.3 139.2' fill='none' stroke='%2322C3EE' stroke-width='14' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" as="script">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -49,6 +51,9 @@
   #intro.exit { opacity: 0; visibility: hidden; transition: opacity .6s .1s, visibility .6s .1s; }
   #intro.skip { opacity: 0; visibility: hidden; transition: opacity .35s, visibility .35s; }
   #intro .i-flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+  #intro .i-load { position: absolute; inset: 0; display: grid; place-items: center; z-index: 2; transition: opacity .3s; pointer-events: none; }
+  #intro .i-load i { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(242,244,255,.15); border-top-color: var(--aqua); animation: spin .9s linear infinite; }
+  #intro.play .i-load { opacity: 0; }
   #intro .i-count { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
   #intro .i-count span { grid-area: 1 / 1; font-family: var(--display); font-weight: 800; font-size: clamp(120px, 26vw, 300px); line-height: 1; color: transparent;
                          -webkit-text-stroke: 2px rgba(242,244,255,.9); text-shadow: 0 0 60px rgba(34,195,238,.55); opacity: 0; }
@@ -78,7 +83,7 @@
   #sky { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
   .glow { position: fixed; width: 620px; height: 620px; border-radius: 50%; pointer-events: none; z-index: 1;
           background: radial-gradient(circle, rgba(123,92,255,.20), rgba(47,212,255,.06) 45%, transparent 70%);
-          transform: translate(-50%,-50%); left: 50%; top: 40%; transition: opacity .4s; mix-blend-mode: screen; }
+          transform: translate3d(calc(50vw - 310px), calc(40vh - 310px), 0); left: 0; top: 0; transition: opacity .4s; will-change: transform; opacity: .8; }
   main, header, footer { position: relative; z-index: 2; }
 
   /* nav */
@@ -205,6 +210,47 @@
   @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: .6; } }
   @keyframes ripple { 0% { transform: scale(.35); opacity: 1; } 100% { transform: scale(1.6); opacity: 0; } }
 
+  /* BOOM: hero + project cards */
+  #sky { background: linear-gradient(180deg, #0B1030, #070A22); }
+  .hero-chip { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 26px; padding: 8px 16px 8px 12px; border-radius: 999px; border: 1px solid rgba(34,195,238,.35);
+               background: rgba(34,195,238,.08); font-size: 14px; color: var(--star); opacity: 0; animation: fade .8s .2s forwards; }
+  .hero-chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--aqua); animation: ping 2s infinite; }
+  .hero-chip b { color: var(--aqua); font-weight: 600; }
+  .hero h1 .grad { filter: drop-shadow(0 0 28px rgba(47,212,255,.35)); }
+  .btn.primary { background-image: linear-gradient(120deg, var(--violet), var(--aqua), var(--violet)); background-size: 200% 100%; animation: sweep 4s linear infinite; }
+  .orbit-wrap { animation: popIn 1.3s .15s cubic-bezier(.2,.9,.25,1.15) both; }
+  .boom-ring { position: absolute; left: 35%; top: 35%; width: 30%; height: 30%; border-radius: 50%; border: 2px solid rgba(47,212,255,.85); pointer-events: none; opacity: 0;
+               box-shadow: 0 0 40px rgba(47,212,255,.6), inset 0 0 30px rgba(123,92,255,.5); animation: boomRing 1.6s .3s cubic-bezier(.15,.7,.2,1) both; }
+  .boom-ring.r2 { animation-delay: .55s; border-color: rgba(123,92,255,.85); }
+  body.intro-wait .orbit-wrap, body.intro-wait .boom-ring, body.intro-wait .hero-chip { animation-play-state: paused; }
+
+  .boom-band { position: relative; z-index: 2; margin: 0 -3vw; transform: rotate(-2.5deg); overflow: hidden; padding: 18px 0;
+               background: linear-gradient(90deg, var(--violet), #3B6BFF 50%, var(--aqua)); box-shadow: 0 20px 60px rgba(123,92,255,.35); }
+  .boom-band .track { display: flex; width: max-content; gap: 44px; animation: marquee 28s linear infinite; }
+  .boom-band span { font-family: var(--display); font-weight: 800; font-size: clamp(22px, 3vw, 40px); letter-spacing: -.02em; color: #fff; white-space: nowrap; }
+  .boom-band span.o { color: transparent; -webkit-text-stroke: 1.5px rgba(255,255,255,.9); }
+  .boom-band em { font-style: normal; align-self: center; color: rgba(255,255,255,.75); font-size: clamp(18px, 2vw, 28px); }
+
+  #kemas, #rumahsync { position: relative; overflow: hidden; }
+  .feature { position: relative; }
+  .feature::before { content: attr(data-no); position: absolute; top: -.36em; right: -.04em; z-index: -1; pointer-events: none; font-family: var(--display); font-weight: 800;
+                     font-size: clamp(160px, 26vw, 420px); line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(242,244,255,.09); }
+  .feature.flip::before { right: auto; left: -.04em; }
+  .frame::after { content: ""; position: absolute; inset: 4% 12%; z-index: -1; border-radius: 50%; pointer-events: none;
+                  background: conic-gradient(from 0deg, #7B5CFF, #22C3EE, #FF8A5B, #7B5CFF); filter: blur(42px); opacity: .5; animation: spin 9s linear infinite; }
+  #forming-h, #creed-h, #signal-h { background: linear-gradient(100deg, #fff 0%, #C9C0FF 40%, #22C3EE 70%, #fff 100%); background-size: 220% 100%;
+                                    -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 9s ease-in-out infinite; }
+  .slot { transition: transform .35s cubic-bezier(.2,.8,.2,1), border-color .35s, box-shadow .35s; }
+  .slot::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity .35s;
+                  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(123,92,255,.3), transparent 45%); }
+  .slot:hover { transform: translateY(-8px); border-color: rgba(47,212,255,.4); box-shadow: 0 30px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(47,212,255,.15); }
+  .slot:hover::before { opacity: 1; }
+  .slot:hover .planet { box-shadow: 0 0 90px var(--c3); }
+  @keyframes popIn { from { opacity: 0; transform: scale(.6) rotate(-8deg); filter: blur(10px); } to { opacity: 1; transform: none; filter: none; } }
+  @keyframes boomRing { 0% { opacity: .95; transform: scale(.4); } 100% { opacity: 0; transform: scale(4.2); } }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+  @keyframes sweep { to { background-position: 200% 0; } }
+
   @media (max-width: 960px) {
     .hero { grid-template-columns: 1fr; padding-top: 110px; }
     .orbit-wrap { max-width: 520px; order: -1; margin-bottom: -40px; }
@@ -226,6 +272,7 @@
   <video class="i-video" src="assets/artemis-liftoff.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
   <div class="i-vshade" aria-hidden="true"></div>
   <div class="i-credit" aria-hidden="true">Video: NASA</div>
+  <div class="i-load" aria-hidden="true"><i></i></div>
   <div class="i-count" aria-hidden="true"><span>3</span><span>2</span><span>1</span></div>
   <div class="i-text" aria-hidden="true">
     <div class="i-word">AMZProject</div>
@@ -245,9 +292,17 @@
   const release = () => document.body.classList.remove('intro-wait');
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { intro.remove(); release(); return; }
 
+  /* device budget: lighter scene on small or low-power devices, no clip on data saver or slow networks */
+  const conn = navigator.connection || {};
+  const slowNet = !!conn.saveData || /(^|-)2g|3g/.test(conn.effectiveType || '');
+  const lite = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4 || matchMedia('(max-width: 760px)').matches;
+
   const soundBtn = intro.querySelector('.i-sound'), soundLabel = soundBtn.querySelector('span'), skipBtn = intro.querySelector('.i-skip'), flashEl = intro.querySelector('.i-flash');
+  const video = intro.querySelector('.i-video');
   let soundOn = true; try { soundOn = localStorage.getItem('amz-sound') !== 'off'; } catch (e) {}
   let state = 'load', renderer = null, raf = 0, removed = false;
+  const dropVideo = () => { video.removeAttribute('src'); video.load(); intro.querySelectorAll('.i-video, .i-vshade, .i-credit').forEach(el => el.remove()); };
+  if (slowNet) dropVideo();
 
   /* ---------- sound: synthesized with Web Audio, no files ---------- */
   let ac = null, master = null, noiseBuf = null, pad = null, rumbleNode = null;
@@ -303,10 +358,9 @@
     soundBtn.setAttribute('aria-pressed', String(soundOn));
     soundLabel.textContent = !soundOn ? 'Sound off' : waiting ? 'Tap for sound' : 'Sound on';
   };
-  let onAudioLive = () => {};
   const unlock = () => {
     if (!soundOn || state === 'done' || !setupAudio()) return;
-    if (ac.state !== 'running') ac.resume().then(() => { onAudioLive(); syncSound(); }).catch(() => {});
+    if (ac.state !== 'running') ac.resume().then(() => { if (state === 'play') startPad(); syncSound(); }).catch(() => {});
   };
   const unlockEvents = ['pointerdown', 'keydown', 'touchstart'];
   unlockEvents.forEach(ev => addEventListener(ev, unlock, { passive: true }));
@@ -318,7 +372,7 @@
     unlockEvents.forEach(ev => removeEventListener(ev, unlock));
     if (ac) { stopPad(fast ? .15 : 1.2); stopRumble(.2); if (fast) master.gain.setTargetAtTime(0, ac.currentTime, .05); setTimeout(() => ac.close(), 2200); }
     intro.classList.add(fast ? 'skip' : 'exit'); release();
-    setTimeout(() => { removed = true; cancelAnimationFrame(raf); if (renderer) renderer.dispose(); intro.remove(); }, fast ? 400 : 800);
+    setTimeout(() => { removed = true; cancelAnimationFrame(raf); if (renderer) renderer.dispose(); if (video.isConnected) video.pause(); intro.remove(); }, fast ? 400 : 800);
   };
   skipBtn.addEventListener('click', () => finish(true));
   addEventListener('keydown', e => { if (e.key === 'Escape') finish(true); });
@@ -329,137 +383,41 @@
     syncSound();
   });
 
-  /* ---------- load the NASA clip and three.js; no WebGL means no intro, no clip means 3D only ---------- */
-  const loadTimer = setTimeout(() => { if (state === 'load') finish(true); }, 8000);
-  const video = intro.querySelector('.i-video');
-  const videoReady = new Promise(res => {
-    if (video.readyState >= 4) return res(true);
-    video.addEventListener('canplaythrough', () => res(true), { once: true });
-    video.addEventListener('error', () => res(false), { once: true });
-    setTimeout(() => res(video.readyState >= 3), 5000);
-  });
+  /* ---------- loading: the clip starts as soon as it can play; three.js loads alongside ---------- */
   const lib = document.createElement('script');
   lib.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
   const libReady = new Promise((res, rej) => { lib.onload = res; lib.onerror = rej; });
+  libReady.catch(() => {});
   document.head.appendChild(lib);
-  Promise.all([libReady, videoReady]).then(async ([, ok]) => {
-    clearTimeout(loadTimer); if (state !== 'load') return;
-    let hasVideo = ok;
-    if (hasVideo) { try { video.currentTime = 0; await video.play(); } catch (e) { hasVideo = false; } }
-    if (!hasVideo) intro.querySelectorAll('.i-video, .i-vshade, .i-credit').forEach(el => el.remove());
-    try { build(hasVideo); } catch (e) { finish(true); }
-  }).catch(() => { clearTimeout(loadTimer); finish(true); });
+  const videoReady = new Promise(res => {
+    if (!video.isConnected) return res(false);
+    if (video.readyState >= 3) return res(true);
+    video.addEventListener('canplay', () => res(true), { once: true });
+    video.addEventListener('error', () => res(false), { once: true });
+    setTimeout(() => res(video.readyState >= 3), 3000);
+  });
+  const giveUp = setTimeout(() => { if (state === 'load') finish(true); }, 7000);
 
-  function build(hasVideo) {
-    const THREE = window.THREE;
+  (async () => {
+    let hasVideo = await videoReady;
+    if (state !== 'load') return;
+    if (hasVideo) { try { video.currentTime = 0; await video.play(); } catch (e) { hasVideo = false; } }
+    if (!hasVideo) {
+      if (video.isConnected) dropVideo();
+      try { await libReady; } catch (e) { clearTimeout(giveUp); finish(true); return; }
+      if (state !== 'load') return;
+    }
+    clearTimeout(giveUp);
+    begin(hasVideo);
+  })();
+
+  function begin(hasVideo) {
     const clamp = v => Math.max(0, Math.min(1, v));
-    const outCubic = p => 1 - Math.pow(1 - p, 3), outQuart = p => 1 - Math.pow(1 - p, 4), inCubic = p => p * p * p;
-    const outBack = p => { const c = 1.7; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); };
     // with the clip: real liftoff first, then the 3D A rises out of the white-out
     const V = hasVideo ? 6.2 : 0;
     const T_IGN = hasVideo ? V : 1.05, T_ARRIVE = hasVideo ? V + .95 : 2.6, T_BOOM = T_ARRIVE + .7, T_BLAST = T_BOOM + 1.7, T_END = T_BLAST + .85;
     if (hasVideo) intro.classList.add('vid');
     intro.style.setProperty('--d-word', (T_BOOM + .12) + 's'); intro.style.setProperty('--d-unity', (T_BOOM + .4) + 's'); intro.style.setProperty('--d-tag', (T_BOOM + .75) + 's');
-
-    const canvas = document.createElement('canvas'); intro.prepend(canvas);
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
-    const scene = new THREE.Scene(); scene.background = new THREE.Color(0x03040f);
-    const camera = new THREE.PerspectiveCamera(40, 1, .1, 400);
-
-    let z0 = 26, logoY = 1.6, logo = null;
-    const size = () => {
-      const W = innerWidth, H = innerHeight;
-      renderer.setSize(W, H, false); camera.aspect = W / H; camera.updateProjectionMatrix();
-      const textTop = Math.min(H * .74, H - 190);
-      z0 = Math.max(26, 13 / (0.728 * camera.aspect));
-      for (let k = 0; k < 30; k++) {
-        const u = H / (z0 * 0.728);
-        logoY = Math.max(1.4, (H / 2 + 4.3 * u - textTop + 24) / u);
-        if (H / 2 - (logoY + 4.1) * u >= 12) break;
-        z0 *= 1.08;
-      }
-    };
-    size(); addEventListener('resize', size);
-
-    scene.add(new THREE.AmbientLight(0x8890c0, .45));
-    const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(-6, 8, 10); scene.add(key);
-    const rim = new THREE.DirectionalLight(0x7b5cff, 2); rim.position.set(6, -4, -8); scene.add(rim);
-    const fireLight = new THREE.PointLight(0xff8a3a, 0, 18); scene.add(fireLight);
-
-    /* ---- Orbit A in 3D ---- */
-    logo = new THREE.Group(); scene.add(logo);
-    const rocket = new THREE.Group(); logo.add(rocket);
-    const P = (x, y) => [(x - 100) / 20, -(y - 100) / 20];
-    const shape = new THREE.Shape(); [[100, 28], [164, 172], [134, 172], [100, 94], [66, 172], [36, 172]].forEach((pt, i) => { const [x, y] = P(...pt); i ? shape.lineTo(x, y) : shape.moveTo(x, y); }); shape.closePath();
-    const aGeo = new THREE.ExtrudeGeometry(shape, { depth: .8, bevelEnabled: true, bevelThickness: .14, bevelSize: .09, bevelSegments: 4 }); aGeo.translate(0, 0, -.4);
-    const aMesh = new THREE.Mesh(aGeo, new THREE.MeshStandardMaterial({ color: 0xf2f4ff, metalness: .55, roughness: .22 })); rocket.add(aMesh);
-
-    const ringRoll = new THREE.Group(); ringRoll.position.y = -.8; ringRoll.rotation.z = 16 * Math.PI / 180; logo.add(ringRoll);
-    const ringTilt = new THREE.Group(); ringTilt.rotation.x = -72 * Math.PI / 180; ringRoll.add(ringTilt);
-    const ringSpin = new THREE.Group(); ringTilt.add(ringSpin);
-    const ringMat = new THREE.MeshStandardMaterial({ color: 0x8e7bff, emissive: 0x3a24c0, emissiveIntensity: .55, metalness: .5, roughness: .3 });
-    ringSpin.add(new THREE.Mesh(new THREE.TorusGeometry(4.2, .2, 24, 220), ringMat));
-    ringRoll.visible = false;
-
-    const glowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
-      g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.3, 'rgba(255,255,255,.45)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })();
-    const sat = new THREE.Mesh(new THREE.SphereGeometry(.42, 32, 24), new THREE.MeshBasicMaterial({ color: 0x6fe6ff })); ringTilt.add(sat);
-    const satHalo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0x22c3ee, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false })); satHalo.scale.setScalar(3); sat.add(satHalo);
-    sat.add(new THREE.PointLight(0x22c3ee, 2.2, 12));
-
-    const shock = new THREE.Mesh(new THREE.TorusGeometry(4.2, .07, 8, 220), new THREE.MeshBasicMaterial({ color: 0x9ff0ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
-    shock.visible = false; scene.add(shock);
-
-    /* ---- particles: thruster fire + explosion sparks ---- */
-    const PN = 1600, ppos = new Float32Array(PN * 3), pcol = new Float32Array(PN * 3), pvel = new Float32Array(PN * 3), plife = new Float32Array(PN), pmax = new Float32Array(PN), pbase = new Float32Array(PN * 3);
-    for (let i = 0; i < PN; i++) ppos[i * 3 + 1] = -999;
-    let pc = 0;
-    const emit = (x, y, z, vx, vy, vz, life, r, g, b) => {
-      const i = pc, k = i * 3; pc = (pc + 1) % PN;
-      ppos[k] = x; ppos[k + 1] = y; ppos[k + 2] = z; pvel[k] = vx; pvel[k + 1] = vy; pvel[k + 2] = vz;
-      plife[i] = pmax[i] = life; pbase[k] = r; pbase[k + 1] = g; pbase[k + 2] = b;
-    };
-    const pGeo = new THREE.BufferGeometry(); pGeo.setAttribute('position', new THREE.BufferAttribute(ppos, 3)); pGeo.setAttribute('color', new THREE.BufferAttribute(pcol, 3));
-    const points = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 2.2, map: glowTex, vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
-    points.frustumCulled = false; scene.add(points);
-    const firePalette = [[1, .97, .85], [1, .82, .45], [1, .62, .22], [1, .5, .14]];
-    const thrust = (dt, power) => {
-      const n = Math.round(power * 950 * dt), ry = rocket.rotation.y;
-      for (const lx of [-2.45, 2.45]) for (let j = 0; j < n; j++) {
-        const c = firePalette[Math.floor(Math.random() * firePalette.length)];
-        const wx = logo.position.x + lx * Math.cos(ry), wz = -lx * Math.sin(ry), wy = logo.position.y + rocket.position.y - 3.75;
-        emit(wx + (Math.random() - .5) * .9, wy, wz + (Math.random() - .5) * .9, (Math.random() - .5) * 2.6, -(10 + Math.random() * 9) * power, (Math.random() - .5) * 2.6, .35 + Math.random() * .4, c[0], c[1], c[2]);
-      }
-    };
-    const explode = (x, y, z) => {
-      for (let j = 0; j < 520; j++) {
-        const u = Math.random() * 2 - 1, a = Math.random() * Math.PI * 2, s = Math.sqrt(1 - u * u), sp = 5 + Math.random() * 15, c = Math.random() < .55 ? [.45, .9, 1] : (Math.random() < .5 ? [1, 1, 1] : [.6, .45, 1]);
-        emit(x, y, z, Math.cos(a) * s * sp, u * sp, Math.sin(a) * s * sp, .7 + Math.random() * .8, c[0], c[1], c[2]);
-      }
-    };
-    const updateParticles = dt => {
-      const drag = Math.pow(.2, dt);
-      for (let i = 0; i < PN; i++) {
-        const k = i * 3;
-        if (plife[i] <= 0) { pcol[k] = pcol[k + 1] = pcol[k + 2] = 0; continue; }
-        plife[i] -= dt; const f = Math.max(0, plife[i] / pmax[i]);
-        ppos[k] += pvel[k] * dt; ppos[k + 1] += pvel[k + 1] * dt; ppos[k + 2] += pvel[k + 2] * dt;
-        pvel[k] *= drag; pvel[k + 1] *= drag; pvel[k + 2] *= drag;
-        pcol[k] = pbase[k] * f; pcol[k + 1] = pbase[k + 1] * Math.pow(f, 1.3); pcol[k + 2] = pbase[k + 2] * Math.pow(f, 2.6);
-      }
-      pGeo.attributes.position.needsUpdate = true; pGeo.attributes.color.needsUpdate = true;
-    };
-
-    /* ---- star streaks that rush down while climbing ---- */
-    const N = 700, sx = new Float32Array(N), sy = new Float32Array(N), sz = new Float32Array(N), spos = new Float32Array(N * 6);
-    for (let i = 0; i < N; i++) { sx[i] = (Math.random() - .5) * 110; sy[i] = (Math.random() - .5) * 60; sz[i] = -10 - Math.random() * 70; }
-    const starGeo = new THREE.BufferGeometry(); starGeo.setAttribute('position', new THREE.BufferAttribute(spos, 3));
-    const streaks = new THREE.LineSegments(starGeo, new THREE.LineBasicMaterial({ color: 0xcfe6ff, transparent: true, opacity: .5 }));
-    streaks.frustumCulled = false; scene.add(streaks);
-
-    let mx = 0, my = 0; addEventListener('pointermove', e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
 
     const cues = [
       [0, () => startRumble()], [0.02, n => beep(n, 660)], [0.37, n => beep(n, 660)], [0.72, n => beep(n, 990)],
@@ -472,95 +430,203 @@
       [T_BOOM, n => { boom(n, true); sparkle(n + .08); chime(n + .05, 523.25, .14, 2.6); chime(n + .08, 783.99, .1, 2.6); }],
       [T_BLAST, n => { roar(n, 1.1, .5); noise(n, 1, 'bandpass', 300, 4000, 1, .25, .7); }]
     ].map(([at, fn]) => ({ at, fn, done: false }));
-    onAudioLive = () => { if (state === 'play') startPad(); };
 
     state = 'play'; intro.classList.add('play');
-    if (soundOn && setupAudio()) ac.resume().then(() => { onAudioLive(); syncSound(); }).catch(() => {});
+    if (soundOn && setupAudio()) ac.resume().then(() => { startPad(); syncSound(); }).catch(() => {});
     syncSound();
-    const t0 = performance.now(); let last = t0, leaving = false, boomed = false, flashT = -9;
 
+    let glStep = null, glFailed = false;
+    const tryBuild = () => { if (glStep || glFailed || state !== 'play') return; try { glStep = buildGL(); } catch (e) { glFailed = true; } };
+    if (window.THREE) tryBuild(); else libReady.then(tryBuild, () => { glFailed = true; });
+
+    const t0 = performance.now(); let last = t0;
     const loop = now => {
       if (removed) return;
       const t = (now - t0) / 1000, dt = Math.min(.05, (now - last) / 1000); last = now;
       for (const c of cues) if (!c.done && t >= c.at) { c.done = true; if (live() && state === 'play') { try { c.fn(ac.currentTime); } catch (e) {} } }
 
-      /* climb speed for the star streaks */
-      let speed = 2;
-      if (t < T_IGN) speed = 2 + t * 4;
-      else if (t < T_ARRIVE + .4) speed = 6 + 150 * Math.sin(clamp((t - T_IGN) / (T_ARRIVE + .4 - T_IGN)) * Math.PI);
-      if (t > T_BLAST) speed += 260 * inCubic(clamp((t - T_BLAST) / .8));
-      const len = Math.min(26, .06 + speed * .05);
-      for (let i = 0; i < N; i++) {
-        sy[i] -= speed * dt; if (sy[i] < -30) { sy[i] += 60; sx[i] = (Math.random() - .5) * 110; }
-        const k = i * 6; spos[k] = spos[k + 3] = sx[i]; spos[k + 1] = sy[i]; spos[k + 4] = sy[i] + len; spos[k + 2] = spos[k + 5] = sz[i];
-      }
-      starGeo.attributes.position.needsUpdate = true;
-
-      /* rocket A: launch, arrive, hover, blast off */
-      const pf = clamp((t - T_IGN) / (T_ARRIVE - T_IGN));
-      rocket.position.y = t < T_IGN ? -22 : -22 * (1 - outQuart(pf)) + (t > T_ARRIVE ? Math.sin((t - T_ARRIVE) * 2.2) * .12 : 0);
-      rocket.rotation.y = (1 - outCubic(pf)) * Math.PI * 2;
-      rocket.rotation.z = Math.sin(t * 24) * .025 * (1 - pf);
-      let power = 0;
-      if (t > T_IGN && t < T_ARRIVE - .1) power = 1.15 - pf * .7;
-      if (t > T_BLAST) power = 1.4;
-      if (power > 0 && state === 'play') thrust(dt, power);
-      fireLight.intensity = power * 3; fireLight.position.set(0, logo.position.y + rocket.position.y - 4.5, 2);
-
-      /* orbit ring whips in, satellite races around and docks */
-      const pr = clamp((t - T_ARRIVE) / .7);
-      ringRoll.visible = t > T_ARRIVE;
-      ringRoll.scale.setScalar(Math.max(.01, outBack(pr)));
-      ringSpin.rotation.z = (1 - outCubic(pr)) * Math.PI * 5;
-      const phi = -(1 - outCubic(clamp((t - T_ARRIVE) / .7))) * Math.PI * 6;
-      sat.position.set(4.2 * Math.cos(phi), 4.2 * Math.sin(phi), 0);
-      sat.visible = t > T_ARRIVE + .05;
-
-      /* BOOM */
-      if (t >= T_BOOM && !boomed) {
-        boomed = true; flashT = t;
-        const c = new THREE.Vector3(); ringRoll.getWorldPosition(c); explode(c.x, c.y, c.z);
-      }
-      const ps = clamp((t - T_BOOM) / 1.1);
-      shock.visible = ps > 0 && ps < 1; shock.position.set(0, logo.position.y - .8, .5); shock.scale.setScalar(.6 + 2.6 * outCubic(ps)); shock.material.opacity = (1 - ps);
-      satHalo.scale.setScalar(3 + (ps > 0 && ps < .5 ? Math.sin(ps * 2 * Math.PI) * 5 : 0));
       let flash = 0;
       if (hasVideo) {
         if (t > V - .55 && t < V - .1) flash = clamp((t - (V - .55)) / .45);
         else if (t >= V - .1) flash = Math.max(0, 1 - (t - (V - .1)) / .7);
-        if (t > V - .25 && !intro.classList.contains('gl')) intro.classList.add('gl');
+        if (t > V - .25 && glStep && !intro.classList.contains('gl')) intro.classList.add('gl');
         if (t > V + 1 && !video.paused) video.pause();
+        // 3D never arrived in time: end on the white-out instead of waiting
+        if (!glStep && t > V - .3 && state === 'play') { flashEl.style.opacity = '1'; finish(false); }
       }
-      if (t - flashT < .5) flash = Math.max(flash, .85 * (1 - (t - flashT) / .5));
+      if (glStep) flash = Math.max(flash, glStep(t, dt));
       if (t > T_END - .3) flash = Math.max(flash, clamp((t - (T_END - .3)) / .25));
       flashEl.style.opacity = flash.toFixed(3);
-
-      /* idle sway, then blast off upward */
-      const sway = clamp((t - T_ARRIVE) / .8);
-      logo.rotation.y = Math.sin((t - T_ARRIVE) * 1.1) * .4 * sway + mx * .3;
-      logo.rotation.x = Math.sin(t * .8) * .06 * sway + my * .18;
-      const pb = clamp((t - T_BLAST) / .85);
-      logo.position.y = logoY + 34 * inCubic(pb);
-
-      /* camera shake */
-      let shake = 0;
-      if (t < T_IGN) shake = .04 + t * .1;
-      else if (t < T_ARRIVE) shake = .32 * (1 - pf);
-      if (t > T_BOOM && t < T_BOOM + .6) shake = Math.max(shake, .9 * (1 - (t - T_BOOM) / .6));
-      if (t > T_BLAST) shake = Math.max(shake, .35);
-      const shx = (Math.random() - .5) * shake, shy = (Math.random() - .5) * shake;
-      const cz = z0 + (t < T_IGN ? 3 * (1 - t / T_IGN) : 0) - (t > T_BOOM ? Math.min(1.5, (t - T_BOOM) * .7) : 0);
-      camera.position.set(shx, shy, cz); camera.lookAt(shx * .3, shy * .3, 0);
-
-      updateParticles(dt);
-
-      if (t > T_BLAST && !leaving) { leaving = true; intro.classList.add('leave'); }
       if (t > T_END && state === 'play') finish(false);
-
-      renderer.render(scene, camera);
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
+
+    function buildGL() {
+      const THREE = window.THREE;
+      const outCubic = p => 1 - Math.pow(1 - p, 3), outQuart = p => 1 - Math.pow(1 - p, 4), inCubic = p => p * p * p;
+      const outBack = p => { const c = 1.7; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); };
+
+      const canvas = document.createElement('canvas'); intro.prepend(canvas);
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: !lite, powerPreference: 'high-performance' });
+      renderer.setPixelRatio(lite ? 1 : Math.min(window.devicePixelRatio || 1, 1.5));
+      renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
+      const scene = new THREE.Scene(); scene.background = new THREE.Color(0x03040f);
+      const camera = new THREE.PerspectiveCamera(40, 1, .1, 400);
+
+      let z0 = 26, logoY = 1.6;
+      const size = () => {
+        const W = innerWidth, H = innerHeight;
+        renderer.setSize(W, H, false); camera.aspect = W / H; camera.updateProjectionMatrix();
+        const textTop = Math.min(H * .74, H - 190);
+        z0 = Math.max(26, 13 / (0.728 * camera.aspect));
+        for (let k = 0; k < 30; k++) {
+          const u = H / (z0 * 0.728);
+          logoY = Math.max(1.4, (H / 2 + 4.3 * u - textTop + 24) / u);
+          if (H / 2 - (logoY + 4.1) * u >= 12) break;
+          z0 *= 1.08;
+        }
+      };
+      size(); addEventListener('resize', size);
+
+      scene.add(new THREE.AmbientLight(0x8890c0, .45));
+      const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(-6, 8, 10); scene.add(key);
+      const rim = new THREE.DirectionalLight(0x7b5cff, 2); rim.position.set(6, -4, -8); scene.add(rim);
+      const fireLight = new THREE.PointLight(0xff8a3a, 0, 18); scene.add(fireLight);
+
+      /* Orbit A in 3D */
+      const logo = new THREE.Group(); scene.add(logo);
+      const rocket = new THREE.Group(); logo.add(rocket);
+      const P = (x, y) => [(x - 100) / 20, -(y - 100) / 20];
+      const shape = new THREE.Shape(); [[100, 28], [164, 172], [134, 172], [100, 94], [66, 172], [36, 172]].forEach((pt, i) => { const [x, y] = P(...pt); i ? shape.lineTo(x, y) : shape.moveTo(x, y); }); shape.closePath();
+      const aGeo = new THREE.ExtrudeGeometry(shape, { depth: .8, bevelEnabled: true, bevelThickness: .14, bevelSize: .09, bevelSegments: lite ? 2 : 4 }); aGeo.translate(0, 0, -.4);
+      rocket.add(new THREE.Mesh(aGeo, new THREE.MeshStandardMaterial({ color: 0xf2f4ff, metalness: .55, roughness: .22 })));
+
+      const ringRoll = new THREE.Group(); ringRoll.position.y = -.8; ringRoll.rotation.z = 16 * Math.PI / 180; logo.add(ringRoll);
+      const ringTilt = new THREE.Group(); ringTilt.rotation.x = -72 * Math.PI / 180; ringRoll.add(ringTilt);
+      const ringSpin = new THREE.Group(); ringTilt.add(ringSpin);
+      ringSpin.add(new THREE.Mesh(new THREE.TorusGeometry(4.2, .2, lite ? 12 : 24, lite ? 120 : 220), new THREE.MeshStandardMaterial({ color: 0x8e7bff, emissive: 0x3a24c0, emissiveIntensity: .55, metalness: .5, roughness: .3 })));
+      ringRoll.visible = false;
+
+      const glowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'); const g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+        g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.3, 'rgba(255,255,255,.45)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
+      const sat = new THREE.Mesh(new THREE.SphereGeometry(.42, 24, 16), new THREE.MeshBasicMaterial({ color: 0x6fe6ff })); ringTilt.add(sat);
+      const satHalo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0x22c3ee, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false })); satHalo.scale.setScalar(3); sat.add(satHalo);
+      sat.add(new THREE.PointLight(0x22c3ee, 2.2, 12));
+
+      const shock = new THREE.Mesh(new THREE.TorusGeometry(4.2, .07, 6, 160), new THREE.MeshBasicMaterial({ color: 0x9ff0ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+      shock.visible = false; scene.add(shock);
+
+      /* particles: thruster fire + explosion sparks */
+      const PN = lite ? 700 : 1600, ppos = new Float32Array(PN * 3), pcol = new Float32Array(PN * 3), pvel = new Float32Array(PN * 3), plife = new Float32Array(PN), pmax = new Float32Array(PN), pbase = new Float32Array(PN * 3);
+      for (let i = 0; i < PN; i++) ppos[i * 3 + 1] = -999;
+      let pc = 0;
+      const emit = (x, y, z, vx, vy, vz, life, r, g, b) => {
+        const i = pc, k = i * 3; pc = (pc + 1) % PN;
+        ppos[k] = x; ppos[k + 1] = y; ppos[k + 2] = z; pvel[k] = vx; pvel[k + 1] = vy; pvel[k + 2] = vz;
+        plife[i] = pmax[i] = life; pbase[k] = r; pbase[k + 1] = g; pbase[k + 2] = b;
+      };
+      const pGeo = new THREE.BufferGeometry(); pGeo.setAttribute('position', new THREE.BufferAttribute(ppos, 3)); pGeo.setAttribute('color', new THREE.BufferAttribute(pcol, 3));
+      const points = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: lite ? 2.8 : 2.2, map: glowTex, vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+      points.frustumCulled = false; scene.add(points);
+      const firePalette = [[1, .97, .85], [1, .82, .45], [1, .62, .22], [1, .5, .14]];
+      const rate = lite ? 420 : 950;
+      const thrust = (dt, power) => {
+        const n = Math.round(power * rate * dt), ry = rocket.rotation.y;
+        for (const lx of [-2.45, 2.45]) for (let j = 0; j < n; j++) {
+          const c = firePalette[Math.floor(Math.random() * firePalette.length)];
+          const wx = lx * Math.cos(ry), wz = -lx * Math.sin(ry), wy = logo.position.y + rocket.position.y - 3.75;
+          emit(wx + (Math.random() - .5) * .9, wy, wz + (Math.random() - .5) * .9, (Math.random() - .5) * 2.6, -(10 + Math.random() * 9) * power, (Math.random() - .5) * 2.6, .35 + Math.random() * .4, c[0], c[1], c[2]);
+        }
+      };
+      const explode = (x, y, z) => {
+        for (let j = 0, n = lite ? 260 : 520; j < n; j++) {
+          const u = Math.random() * 2 - 1, a = Math.random() * Math.PI * 2, s = Math.sqrt(1 - u * u), sp = 5 + Math.random() * 15, c = Math.random() < .55 ? [.45, .9, 1] : (Math.random() < .5 ? [1, 1, 1] : [.6, .45, 1]);
+          emit(x, y, z, Math.cos(a) * s * sp, u * sp, Math.sin(a) * s * sp, .7 + Math.random() * .8, c[0], c[1], c[2]);
+        }
+      };
+      const updateParticles = dt => {
+        const drag = Math.pow(.2, dt);
+        for (let i = 0; i < PN; i++) {
+          const k = i * 3;
+          if (plife[i] <= 0) { pcol[k] = pcol[k + 1] = pcol[k + 2] = 0; continue; }
+          plife[i] -= dt; const f = Math.max(0, plife[i] / pmax[i]);
+          ppos[k] += pvel[k] * dt; ppos[k + 1] += pvel[k + 1] * dt; ppos[k + 2] += pvel[k + 2] * dt;
+          pvel[k] *= drag; pvel[k + 1] *= drag; pvel[k + 2] *= drag;
+          pcol[k] = pbase[k] * f; pcol[k + 1] = pbase[k + 1] * Math.pow(f, 1.3); pcol[k + 2] = pbase[k + 2] * Math.pow(f, 2.6);
+        }
+        pGeo.attributes.position.needsUpdate = true; pGeo.attributes.color.needsUpdate = true;
+      };
+
+      /* star streaks that rush down while climbing */
+      const N = lite ? 350 : 700, sx = new Float32Array(N), sy = new Float32Array(N), sz = new Float32Array(N), spos = new Float32Array(N * 6);
+      for (let i = 0; i < N; i++) { sx[i] = (Math.random() - .5) * 110; sy[i] = (Math.random() - .5) * 60; sz[i] = -10 - Math.random() * 70; }
+      const starGeo = new THREE.BufferGeometry(); starGeo.setAttribute('position', new THREE.BufferAttribute(spos, 3));
+      const streaks = new THREE.LineSegments(starGeo, new THREE.LineBasicMaterial({ color: 0xcfe6ff, transparent: true, opacity: .5 }));
+      streaks.frustumCulled = false; scene.add(streaks);
+
+      let mx = 0, my = 0; addEventListener('pointermove', e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
+      let boomed = false, flashT = -9, leaving = false;
+
+      return (t, dt) => {
+        // while the clip plays the scene stays hidden: skip the heavy work
+        const visible = !hasVideo || t > V - .35;
+
+        let speed = 2;
+        if (t < T_IGN) speed = 2 + t * 4;
+        else if (t < T_ARRIVE + .4) speed = 6 + 150 * Math.sin(clamp((t - T_IGN) / (T_ARRIVE + .4 - T_IGN)) * Math.PI);
+        if (t > T_BLAST) speed += 260 * inCubic(clamp((t - T_BLAST) / .8));
+        if (visible) {
+          const len = Math.min(26, .06 + speed * .05);
+          for (let i = 0; i < N; i++) {
+            sy[i] -= speed * dt; if (sy[i] < -30) { sy[i] += 60; sx[i] = (Math.random() - .5) * 110; }
+            const k = i * 6; spos[k] = spos[k + 3] = sx[i]; spos[k + 1] = sy[i]; spos[k + 4] = sy[i] + len; spos[k + 2] = spos[k + 5] = sz[i];
+          }
+          starGeo.attributes.position.needsUpdate = true;
+        }
+
+        const pf = clamp((t - T_IGN) / (T_ARRIVE - T_IGN));
+        rocket.position.y = t < T_IGN ? -22 : -22 * (1 - outQuart(pf)) + (t > T_ARRIVE ? Math.sin((t - T_ARRIVE) * 2.2) * .12 : 0);
+        rocket.rotation.y = (1 - outCubic(pf)) * Math.PI * 2;
+        rocket.rotation.z = Math.sin(t * 24) * .025 * (1 - pf);
+        let power = 0;
+        if (t > T_IGN && t < T_ARRIVE - .1) power = 1.15 - pf * .7;
+        if (t > T_BLAST) power = 1.4;
+        if (power > 0 && state === 'play') thrust(dt, power);
+        fireLight.intensity = power * 3; fireLight.position.set(0, logo.position.y + rocket.position.y - 4.5, 2);
+
+        const pr = clamp((t - T_ARRIVE) / .7);
+        ringRoll.visible = t > T_ARRIVE;
+        ringRoll.scale.setScalar(Math.max(.01, outBack(pr)));
+        ringSpin.rotation.z = (1 - outCubic(pr)) * Math.PI * 5;
+        const phi = -(1 - outCubic(pr)) * Math.PI * 6;
+        sat.position.set(4.2 * Math.cos(phi), 4.2 * Math.sin(phi), 0);
+        sat.visible = t > T_ARRIVE + .05;
+
+        if (t >= T_BOOM && !boomed) { boomed = true; flashT = t; const c = new THREE.Vector3(); ringRoll.getWorldPosition(c); explode(c.x, c.y, c.z); }
+        const ps = clamp((t - T_BOOM) / 1.1);
+        shock.visible = ps > 0 && ps < 1; shock.position.set(0, logo.position.y - .8, .5); shock.scale.setScalar(.6 + 2.6 * outCubic(ps)); shock.material.opacity = (1 - ps);
+        satHalo.scale.setScalar(3 + (ps > 0 && ps < .5 ? Math.sin(ps * 2 * Math.PI) * 5 : 0));
+
+        const sway = clamp((t - T_ARRIVE) / .8);
+        logo.rotation.y = Math.sin((t - T_ARRIVE) * 1.1) * .4 * sway + mx * .3;
+        logo.rotation.x = Math.sin(t * .8) * .06 * sway + my * .18;
+        logo.position.y = logoY + 34 * inCubic(clamp((t - T_BLAST) / .85));
+
+        let shake = 0;
+        if (!hasVideo && t < T_IGN) shake = .04 + t * .1;
+        else if (t >= T_IGN && t < T_ARRIVE) shake = .32 * (1 - pf);
+        if (t > T_BOOM && t < T_BOOM + .6) shake = Math.max(shake, .9 * (1 - (t - T_BOOM) / .6));
+        if (t > T_BLAST) shake = Math.max(shake, .35);
+        const shx = (Math.random() - .5) * shake, shy = (Math.random() - .5) * shake;
+        const cz = z0 + (!hasVideo && t < T_IGN ? 3 * (1 - t / T_IGN) : 0) - (t > T_BOOM ? Math.min(1.5, (t - T_BOOM) * .7) : 0);
+        camera.position.set(shx, shy, cz); camera.lookAt(shx * .3, shy * .3, 0);
+
+        if (visible) { updateParticles(dt); renderer.render(scene, camera); }
+        if (t > T_BLAST && !leaving) { leaving = true; intro.classList.add('leave'); }
+        return t - flashT < .5 ? .85 * (1 - (t - flashT) / .5) : 0;
+      };
+    }
   }
 })();
 </script>
@@ -580,6 +646,7 @@
 <main>
   <section class="hero" aria-label="Introduction">
     <div>
+      <div class="hero-chip"><i></i><b>KEMAS 3.1</b> is live · <b>RumahSync</b> coming soon</div>
       <h1 id="headline"><span class="w"><span>One</span></span> <span class="w"><span>universe</span></span> <span class="w"><span>for</span></span> <span class="w"><span>everything</span></span> <span class="w"><span class="grad">I&nbsp;build.</span></span></h1>
       <p class="lede">AMZProject Unity is home to the apps, tools and experiences created by Amzar Syafiq. Some are live today. The rest are still forming.</p>
       <div class="actions">
@@ -588,14 +655,17 @@
       </div>
     </div>
     <div class="orbit-wrap">
+      <span class="boom-ring" aria-hidden="true"></span><span class="boom-ring r2" aria-hidden="true"></span>
       <canvas id="orbit" aria-label="Animated map of AMZProject Unity projects orbiting a shared core" role="img"></canvas>
       <div class="tip" id="tip"><b></b><span></span></div>
     </div>
     <div class="scroll-cue" aria-hidden="true"></div>
   </section>
 
+  <div class="boom-band" aria-hidden="true"><div class="track"><span>KEMAS</span><em>✦</em><span class="o">LIVE NOW</span><em>✦</em><span>RUMAHSYNC</span><em>✦</em><span class="o">COMING SOON</span><em>✦</em><span>MORE WORLDS FORMING</span><em>✦</em><span class="o">AMZPROJECT UNITY</span><em>✦</em><span>KEMAS</span><em>✦</em><span class="o">LIVE NOW</span><em>✦</em><span>RUMAHSYNC</span><em>✦</em><span class="o">COMING SOON</span><em>✦</em><span>MORE WORLDS FORMING</span><em>✦</em><span class="o">AMZPROJECT UNITY</span><em>✦</em></div></div>
+
   <section id="kemas" aria-labelledby="kemas-h">
-    <div class="feature">
+    <div class="feature" data-no="01">
       <div class="reveal">
         <div class="status"><i></i>Project 001 · Live now · Version 3.1.0</div>
         <h2 class="kemas-title" id="kemas-h">
@@ -628,7 +698,7 @@
   </section>
 
   <section id="rumahsync" aria-labelledby="rumahsync-h">
-    <div class="feature flip">
+    <div class="feature flip" data-no="02">
       <div class="frame reveal">
         <div class="card">
           <svg class="poster" viewBox="0 0 2400 1350" role="img" aria-label="RumahSync preview showing a house dashboard with 82% of rent collected and a phone screen with the amount to pay" font-family="Instrument Sans, system-ui, sans-serif">
@@ -810,7 +880,7 @@
 <script>
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
   let mx = innerWidth / 2, my = innerHeight / 2, sy = 0;
 
   // header + reveal
@@ -829,6 +899,9 @@
     b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect(); b.style.setProperty('--x', ((e.clientX - r.left - r.width / 2) * .22) + 'px'); b.style.setProperty('--y', ((e.clientY - r.top - r.height / 2) * .3) + 'px'); });
     b.addEventListener('pointerleave', () => { b.style.setProperty('--x', '0px'); b.style.setProperty('--y', '0px'); });
   });
+
+  // spotlight on upcoming cards
+  document.querySelectorAll('.slot').forEach(c => c.addEventListener('pointermove', e => { const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px'); }));
 
   // poster tilt: follows the pointer and moves with scroll
   const frames = [...document.querySelectorAll('.frame')].map(f => ({ f, card: f.querySelector('.card'), base: f.closest('.flip') ? 8 : -8, px: 0, py: 0 }));
@@ -910,13 +983,14 @@
 
   function drawSky(t) {
     sc.clearRect(0, 0, W, H);
-    const bg = sc.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#0B1030'); bg.addColorStop(1, '#070A22'); sc.fillStyle = bg; sc.fillRect(0, 0, W, H);
     const px = (mx / W - .5), py = (my / H - .5);
+    sc.fillStyle = '#F2F4FF';
     for (const s of stars) {
       const x = (s.x - px * 40 * s.z + W) % W, y = ((s.y - py * 40 * s.z - sy * .15 * s.z) % H + H) % H;
       const a = .35 + .45 * Math.sin(t * 1.4 + s.t) * s.z;
-      sc.fillStyle = `rgba(242,244,255,${Math.max(.08, a)})`; sc.fillRect(x, y, s.z * 1.8, s.z * 1.8);
+      sc.globalAlpha = Math.max(.08, a); sc.fillRect(x, y, s.z * 1.8, s.z * 1.8);
     }
+    sc.globalAlpha = 1;
     if (!shoot && Math.random() < .004) shoot = { x: Math.random() * W * .8, y: Math.random() * H * .4, l: 0 };
     if (shoot) { shoot.l += 14; const g = sc.createLinearGradient(shoot.x, shoot.y, shoot.x + shoot.l, shoot.y + shoot.l * .45); g.addColorStop(0, 'rgba(242,244,255,0)'); g.addColorStop(1, 'rgba(242,244,255,.85)');
       sc.strokeStyle = g; sc.lineWidth = 1.4; sc.beginPath(); sc.moveTo(shoot.x, shoot.y); sc.lineTo(shoot.x + shoot.l, shoot.y + shoot.l * .45); sc.stroke(); if (shoot.l > 260) shoot = null; }
@@ -925,9 +999,11 @@
   let gx = mx, gy = my;
   function frameLoop(ms) {
     const t = ms / 1000;
-    gx += (mx - gx) * .08; gy += (my - gy) * .08; glow.style.left = gx + 'px'; glow.style.top = gy + 'px';
-    drawSky(t);
-    if (oc.getBoundingClientRect().bottom > 0) drawOrbit(t);
+    gx += (mx - gx) * .08; gy += (my - gy) * .08; glow.style.transform = 'translate3d(' + (gx - 310) + 'px,' + (gy - 310) + 'px,0)';
+    if (!document.body.classList.contains('intro-wait')) {
+      drawSky(t);
+      if (oc.getBoundingClientRect().bottom > 0) drawOrbit(t);
+    }
     requestAnimationFrame(frameLoop);
   }
   if (reduce) { drawSky(0); drawOrbit(0); glow.style.opacity = 0; }
