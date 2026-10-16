@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AMZProject Unity</title>
+<meta name="description" content="AMZProject Unity — one universe for every app, tool and experience created by Amzar Syafiq.">
+<meta property="og:title" content="AMZProject Unity">
+<meta property="og:description" content="One universe for everything Amzar Syafiq builds. Home of KEMAS and the projects still forming.">
+<meta property="og:image" content="https://github.com/user-attachments/assets/13a81fdb-49ff-42f9-8d82-7a4b3f74090e">
+<meta name="theme-color" content="#0B1030">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%237B5CFF'/%3E%3Cstop offset='1' stop-color='%232FD4FF'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='12' fill='url(%23g)'/%3E%3Cellipse cx='32' cy='32' rx='29' ry='11' fill='none' stroke='%23F2F4FF' stroke-width='3' transform='rotate(-24 32 32)'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #0B1030;
+    --deep: #070A22;
+    --violet: #7B5CFF;
+    --aqua: #2FD4FF;
+    --coral: #FF8A5B;
+    --star: #F2F4FF;
+    --mist: #9AA0C8;
+    --line: rgba(242,244,255,.12);
+    --display: "Unbounded", system-ui, sans-serif;
+    --body: "Instrument Sans", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; overflow-x: clip; }
+  body { background: var(--deep); color: var(--star); font-family: var(--body); font-size: 18px; line-height: 1.6; overflow-x: hidden; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--aqua); outline-offset: 4px; border-radius: 8px; }
+  ::selection { background: var(--violet); color: #fff; }
+
+  /* sky */
+  #sky { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
+  .glow { position: fixed; width: 620px; height: 620px; border-radius: 50%; pointer-events: none; z-index: 1;
+          background: radial-gradient(circle, rgba(123,92,255,.20), rgba(47,212,255,.06) 45%, transparent 70%);
+          transform: translate(-50%,-50%); left: 50%; top: 40%; transition: opacity .4s; mix-blend-mode: screen; }
+  main, header, footer { position: relative; z-index: 2; }
+
+  /* nav */
+  header { position: fixed; top: 0; left: 0; right: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between;
+           padding: 22px clamp(20px, 5vw, 64px); transition: background .4s, padding .4s, backdrop-filter .4s; }
+  header.solid { background: rgba(7,10,34,.72); backdrop-filter: blur(14px); padding-top: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+  .mark { display: flex; align-items: center; gap: 12px; text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 17px; letter-spacing: -.01em; }
+  .mark svg { width: 34px; height: 34px; }
+  .mark svg .ring { transform-origin: 32px 32px; animation: spin 14s linear infinite; }
+  nav { display: flex; gap: 6px; }
+  nav a { text-decoration: none; font-size: 15px; color: var(--mist); padding: 8px 14px; border-radius: 999px; transition: color .25s, background .25s; }
+  nav a:hover { color: var(--star); background: rgba(242,244,255,.06); }
+
+  /* hero */
+  .hero { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: center;
+          padding: 120px clamp(20px, 5vw, 64px) 80px; gap: 24px; }
+  .hero h1 { font-family: var(--display); font-weight: 800; font-size: clamp(44px, 6.6vw, 104px); line-height: .98; letter-spacing: -.035em; }
+  .hero h1 .w { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: .06em; }
+  .hero h1 .w > span { display: inline-block; transform: translateY(110%) rotate(6deg); animation: rise 1.1s cubic-bezier(.2,.8,.2,1) forwards; }
+  .hero h1 .grad { background: linear-gradient(100deg, var(--star) 0%, #C9C0FF 30%, var(--aqua) 60%, var(--star) 90%); background-size: 260% 100%;
+                   -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 9s ease-in-out infinite; }
+  .hero p.lede { margin-top: 30px; max-width: 34ch; font-size: clamp(18px, 1.5vw, 21px); color: var(--mist); opacity: 0; animation: fade 1s .9s forwards; }
+  .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 40px; opacity: 0; animation: fade 1s 1.1s forwards; }
+  .btn { --x: 0px; --y: 0px; position: relative; display: inline-flex; align-items: center; gap: 10px; padding: 16px 28px; border-radius: 999px; text-decoration: none;
+         font-weight: 600; font-size: 16px; transform: translate(var(--x), var(--y)); transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .3s, background .3s; }
+  .btn.primary { background: linear-gradient(120deg, var(--violet), var(--aqua)); color: #fff; box-shadow: 0 14px 40px rgba(123,92,255,.45); }
+  .btn.primary:hover { box-shadow: 0 18px 60px rgba(47,212,255,.5); }
+  .btn.ghost { border: 1px solid var(--line); background: rgba(242,244,255,.04); }
+  .btn.ghost:hover { background: rgba(242,244,255,.1); }
+
+  .orbit-wrap { position: relative; aspect-ratio: 1 / 1; width: 100%; max-width: 720px; justify-self: center; }
+  #orbit { width: 100%; height: 100%; display: block; }
+  .tip { position: absolute; pointer-events: none; padding: 8px 14px; border-radius: 12px; background: rgba(11,16,48,.9); border: 1px solid var(--line);
+         font-size: 14px; white-space: nowrap; transform: translate(-50%, calc(-100% - 18px)); opacity: 0; transition: opacity .2s; }
+  .tip b { font-family: var(--display); font-weight: 600; font-size: 13px; display: block; }
+  .tip span { color: var(--mist); font-size: 13px; }
+  .scroll-cue { position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); width: 26px; height: 42px; border: 1.5px solid var(--line); border-radius: 20px; }
+  .scroll-cue::after { content: ""; position: absolute; left: 50%; top: 9px; width: 4px; height: 8px; margin-left: -2px; border-radius: 2px; background: var(--aqua); animation: cue 1.8s ease-in-out infinite; }
+
+  /* sections */
+  section { padding: clamp(80px, 12vw, 160px) clamp(20px, 5vw, 64px); }
+  h2 { font-family: var(--display); font-weight: 600; font-size: clamp(32px, 4.2vw, 60px); line-height: 1.05; letter-spacing: -.03em; max-width: 18ch; }
+  .sub { margin-top: 18px; color: var(--mist); max-width: 56ch; }
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1s cubic-bezier(.2,.8,.2,1), transform 1s cubic-bezier(.2,.8,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* featured: KEMAS */
+  .feature { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(32px, 5vw, 80px); align-items: center; }
+  .status { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; color: var(--aqua); margin-bottom: 22px; }
+  .status i { width: 9px; height: 9px; border-radius: 50%; background: var(--aqua); box-shadow: 0 0 0 0 rgba(47,212,255,.6); animation: ping 2s infinite; }
+  .kemas-title { display: flex; align-items: center; gap: 18px; font-family: var(--display); font-weight: 800; font-size: clamp(44px, 6vw, 84px); letter-spacing: -.03em; line-height: 1; }
+  .kemas-title svg { width: clamp(56px, 6vw, 84px); height: auto; flex: none; filter: drop-shadow(0 14px 30px rgba(123,92,255,.5)); }
+  .kemas-tag { font-family: var(--display); font-weight: 400; font-size: clamp(20px, 2vw, 28px); margin-top: 18px; color: #C9C0FF; }
+  .feature p.body { margin-top: 20px; color: var(--mist); max-width: 48ch; }
+  .facts { list-style: none; margin-top: 28px; display: grid; gap: 12px; }
+  .facts li { display: flex; gap: 14px; align-items: baseline; color: var(--star); }
+  .facts li::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 2px; transform: rotate(45deg) translateY(-2px); background: linear-gradient(135deg, var(--violet), var(--aqua)); }
+  .feature .actions { opacity: 1; animation: none; }
+  .frame { position: relative; perspective: 1400px; }
+  .frame .card { border-radius: 22px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 60px 120px rgba(0,0,0,.55), 0 0 0 1px rgba(123,92,255,.15);
+                 transform: rotateY(var(--ry, -8deg)) rotateX(var(--rx, 4deg)); transition: transform .5s cubic-bezier(.2,.8,.2,1); background: var(--night); }
+  .frame img { display: block; width: 100%; height: auto; }
+  .frame::before { content: ""; position: absolute; inset: -12%; z-index: -1; border-radius: 50%; background: radial-gradient(circle, rgba(123,92,255,.35), transparent 65%); filter: blur(30px); animation: breathe 6s ease-in-out infinite; }
+
+  /* upcoming */
+  .forming-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 24px; }
+  .forming { margin-top: 56px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+  .slot { position: relative; overflow: hidden; border-radius: 28px; border: 1px solid var(--line); background: linear-gradient(160deg, rgba(23,28,72,.75), rgba(11,16,48,.6));
+          padding: 32px; min-height: 280px; display: flex; flex-direction: column; justify-content: space-between; isolation: isolate; }
+  .slot:nth-child(1) { grid-column: span 7; min-height: 340px; }
+  .slot:nth-child(2) { grid-column: span 5; min-height: 340px; }
+  .slot:nth-child(3) { grid-column: span 4; }
+  .slot:nth-child(4) { grid-column: span 4; }
+  .slot:nth-child(5) { grid-column: span 4; }
+  .slot::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(105deg, transparent 35%, rgba(242,244,255,.07) 50%, transparent 65%);
+                 transform: translateX(-100%); animation: scan 5.5s ease-in-out infinite; animation-delay: var(--d, 0s); }
+  .planet { width: 76px; height: 76px; border-radius: 50%; position: relative; background: radial-gradient(circle at 32% 30%, var(--c1), var(--c2) 70%); box-shadow: 0 0 60px var(--c3); animation: float 7s ease-in-out infinite; animation-delay: var(--d, 0s); }
+  .planet::after { content: ""; position: absolute; left: -22px; right: -22px; top: 50%; height: 18px; margin-top: -9px; border: 1.5px solid rgba(242,244,255,.35); border-radius: 50%; transform: rotate(-18deg); }
+  .slot h3 { font-family: var(--display); font-weight: 600; font-size: clamp(22px, 2vw, 28px); letter-spacing: -.02em; margin-top: 28px; }
+  .slot p { color: var(--mist); font-size: 16px; margin-top: 8px; max-width: 36ch; }
+  .meter { margin-top: 24px; height: 4px; border-radius: 4px; background: rgba(242,244,255,.1); overflow: hidden; }
+  .meter i { display: block; height: 100%; width: var(--p); border-radius: 4px; background: linear-gradient(90deg, var(--coral), #FFC36B); position: relative; }
+  .meter i::after { content: ""; position: absolute; right: 0; top: -3px; width: 10px; height: 10px; border-radius: 50%; background: #FFC36B; box-shadow: 0 0 14px #FFC36B; animation: pulse 1.6s ease-in-out infinite; }
+  .slot .state { color: var(--coral); font-size: 14px; margin-top: 10px; }
+
+  /* principles */
+  .creed { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: clamp(24px, 4vw, 64px); margin-top: 64px; }
+  .creed div { border-top: 1px solid var(--line); padding-top: 26px; }
+  .creed h3 { font-family: var(--display); font-weight: 600; font-size: 22px; letter-spacing: -.02em; }
+  .creed p { color: var(--mist); margin-top: 10px; font-size: 17px; }
+
+  /* signal / footer */
+  .signal { text-align: center; padding-bottom: clamp(100px, 14vw, 180px); }
+  .signal h2 { margin: 0 auto; max-width: 16ch; }
+  .signal .sub { margin: 18px auto 0; }
+  .signal .actions { justify-content: center; opacity: 1; animation: none; }
+  .halo { width: 160px; height: 160px; margin: 0 auto 40px; position: relative; }
+  .halo span { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid rgba(47,212,255,.5); animation: ripple 3.6s cubic-bezier(.2,.6,.3,1) infinite; }
+  .halo span:nth-child(2) { animation-delay: 1.2s; } .halo span:nth-child(3) { animation-delay: 2.4s; }
+  .halo b { position: absolute; inset: 52px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, var(--aqua) 40%, var(--violet)); box-shadow: 0 0 60px rgba(47,212,255,.7); }
+  footer { border-top: 1px solid var(--line); padding: 30px clamp(20px, 5vw, 64px); display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; color: var(--mist); font-size: 15px; }
+  footer a { text-decoration: none; } footer a:hover { color: var(--star); }
+
+  @keyframes rise { to { transform: none; } }
+  @keyframes fade { to { opacity: 1; } }
+  @keyframes shimmer { 0%,100% { background-position: 0% 0; } 50% { background-position: 100% 0; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes cue { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(14px); opacity: 0; } 100% { opacity: 0; } }
+  @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(47,212,255,.6); } 80%,100% { box-shadow: 0 0 0 14px rgba(47,212,255,0); } }
+  @keyframes breathe { 0%,100% { opacity: .6; transform: scale(.96); } 50% { opacity: 1; transform: scale(1.04); } }
+  @keyframes scan { 0%, 30% { transform: translateX(-100%); } 70%, 100% { transform: translateX(100%); } }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: .6; } }
+  @keyframes ripple { 0% { transform: scale(.35); opacity: 1; } 100% { transform: scale(1.6); opacity: 0; } }
+
+  @media (max-width: 960px) {
+    .hero { grid-template-columns: 1fr; padding-top: 110px; }
+    .orbit-wrap { max-width: 520px; order: -1; margin-bottom: -40px; }
+    .feature { grid-template-columns: 1fr; }
+    .forming { grid-template-columns: 1fr; }
+    .slot:nth-child(n) { grid-column: auto; min-height: 240px; }
+    .creed { grid-template-columns: 1fr; }
+    nav a:not(.keep) { display: none; }
+    .scroll-cue { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .hero h1 .w > span, .hero p.lede, .actions, .reveal { transform: none !important; opacity: 1 !important; }
+  }
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="glow" id="glow" aria-hidden="true"></div>
+
+<header id="top">
+  <a class="mark" href="#" aria-label="AMZProject Unity home">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B5CFF"/><stop offset="1" stop-color="#2FD4FF"/></linearGradient></defs>
+      <circle cx="32" cy="32" r="11" fill="url(#mg)"/><g class="ring"><ellipse cx="32" cy="32" rx="28" ry="10" fill="none" stroke="#F2F4FF" stroke-opacity=".85" stroke-width="2.5" transform="rotate(-24 32 32)"/><circle cx="57" cy="22" r="3.2" fill="#2FD4FF"/></g></svg>
+    AMZProject Unity
+  </a>
+  <nav aria-label="Main">
+    <a href="#kemas">KEMAS</a><a href="#forming">Upcoming</a><a href="#creed">Approach</a><a class="keep" href="https://github.com/AmzSyafxProject">GitHub</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" aria-label="Introduction">
+    <div>
+      <h1 id="headline"><span class="w"><span>One</span></span> <span class="w"><span>universe</span></span> <span class="w"><span>for</span></span> <span class="w"><span>everything</span></span> <span class="w"><span class="grad">I&nbsp;build.</span></span></h1>
+      <p class="lede">AMZProject Unity is home to the apps, tools and experiences created by Amzar Syafiq. Some are live today. The rest are still forming.</p>
+      <div class="actions">
+        <a class="btn primary magnet" href="#kemas">Meet KEMAS</a>
+        <a class="btn ghost magnet" href="#forming">See what's coming</a>
+      </div>
+    </div>
+    <div class="orbit-wrap">
+      <canvas id="orbit" aria-label="Animated map of AMZProject Unity projects orbiting a shared core" role="img"></canvas>
+      <div class="tip" id="tip"><b></b><span></span></div>
+    </div>
+    <div class="scroll-cue" aria-hidden="true"></div>
+  </section>
+
+  <section id="kemas" aria-labelledby="kemas-h">
+    <div class="feature">
+      <div class="reveal">
+        <div class="status"><i></i>Live now · Version 3.0.2</div>
+        <h2 class="kemas-title" id="kemas-h">
+          <svg viewBox="0 0 512 512" aria-hidden="true"><defs><linearGradient id="kg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B5CFF"/><stop offset=".55" stop-color="#5A7BFF"/><stop offset="1" stop-color="#22D3F5"/></linearGradient></defs>
+            <rect x="16" y="16" width="480" height="480" rx="124" fill="url(#kg)"/><rect x="150" y="132" width="60" height="248" rx="30" fill="#fff"/>
+            <path d="M224 300C260 262 298 222 328 188" stroke="#fff" stroke-width="58" stroke-linecap="round" fill="none"/>
+            <path d="M246 288C286 316 328 350 362 378" stroke="#fff" stroke-opacity=".82" stroke-width="58" stroke-linecap="round" fill="none"/>
+            <path d="M382 82Q382 128 428 128Q382 128 382 174Q382 128 336 128Q382 128 382 82Z" fill="#fff"/></svg>
+          KEMAS
+        </h2>
+        <div class="kemas-tag">Your PC, Kemas.</div>
+        <p class="body">A native Windows app that clears junk, sorts your folders and frees memory in one click — with safeguards that never touch what matters.</p>
+        <ul class="facts">
+          <li>Smart Clean for temp files, caches and the Recycle Bin</li>
+          <li>File Organizer with your own folder names and rules</li>
+          <li>Memory Booster and Startup Apps for a faster PC</li>
+          <li>Updates itself, safely, whenever a new version lands</li>
+        </ul>
+        <div class="actions">
+          <a class="btn primary magnet" href="https://github.com/AmzSyafxProject/KEMAS/releases/latest/download/KEMAS.exe">Download for Windows</a>
+          <a class="btn ghost magnet" href="https://github.com/AmzSyafxProject/KEMAS">View on GitHub</a>
+        </div>
+      </div>
+      <div class="frame reveal" id="frame">
+        <div class="card"><img src="https://github.com/user-attachments/assets/13a81fdb-49ff-42f9-8d82-7a4b3f74090e" alt="KEMAS app showing a health score of 92 and a Smart Clean button" width="2400" height="1350" loading="lazy"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="forming" aria-labelledby="forming-h">
+    <div class="forming-head reveal">
+      <div>
+        <h2 id="forming-h">Still forming in orbit.</h2>
+        <p class="sub">New projects are taking shape. Each one joins the universe the day it's ready — follow along on GitHub to see them land first.</p>
+      </div>
+      <a class="btn ghost magnet" href="https://github.com/AmzSyafxProject">Follow on GitHub</a>
+    </div>
+    <div class="forming">
+      <article class="slot reveal" style="--d:0s">
+        <div class="planet" style="--c1:#FFC36B;--c2:#FF5C7A;--c3:rgba(255,138,91,.45);--d:0s"></div>
+        <div><h3>Next project</h3><p>The next world in the system. Details arrive at launch.</p><div class="meter"><i style="--p:62%"></i></div><div class="state">In development</div></div>
+      </article>
+      <article class="slot reveal" style="--d:1.1s">
+        <div class="planet" style="--c1:#9CF5FF;--c2:#2F8CFF;--c3:rgba(47,212,255,.4);--d:1.2s"></div>
+        <div><h3>Project in design</h3><p>Sketches, prototypes and a lot of late nights.</p><div class="meter"><i style="--p:38%"></i></div><div class="state">Designing</div></div>
+      </article>
+      <article class="slot reveal" style="--d:2.2s">
+        <div class="planet" style="--c1:#D7C9FF;--c2:#7B5CFF;--c3:rgba(123,92,255,.45);--d:2.4s"></div>
+        <div><h3>Early concept</h3><p>An idea gathering mass.</p><div class="meter"><i style="--p:18%"></i></div><div class="state">Concept</div></div>
+      </article>
+      <article class="slot reveal" style="--d:3.3s">
+        <div class="planet" style="--c1:#B9FFD9;--c2:#18B886;--c3:rgba(33,201,138,.4);--d:3.6s"></div>
+        <div><h3>Early concept</h3><p>Quietly spinning up.</p><div class="meter"><i style="--p:12%"></i></div><div class="state">Concept</div></div>
+      </article>
+      <article class="slot reveal" style="--d:4.4s">
+        <div class="planet" style="--c1:#FFE3F3;--c2:#FF5CB8;--c3:rgba(255,92,184,.4);--d:4.8s"></div>
+        <div><h3>Open slot</h3><p>Reserved for whatever comes next.</p><div class="meter"><i style="--p:4%"></i></div><div class="state">Waiting</div></div>
+      </article>
+    </div>
+  </section>
+
+  <section id="creed" aria-labelledby="creed-h">
+    <h2 class="reveal" id="creed-h">Every project follows the same three rules.</h2>
+    <div class="creed">
+      <div class="reveal"><h3>Feel effortless</h3><p>If it needs a manual, it isn't finished. Things should be obvious the moment they open.</p></div>
+      <div class="reveal"><h3>Respect the person</h3><p>No ads, no tracking, no tricks. Your device and your data stay yours.</p></div>
+      <div class="reveal"><h3>Look like it matters</h3><p>Motion, light and type are part of how something works, not decoration on top.</p></div>
+    </div>
+  </section>
+
+  <section class="signal" aria-labelledby="signal-h">
+    <div class="halo" aria-hidden="true"><span></span><span></span><span></span><b></b></div>
+    <h2 class="reveal" id="signal-h">Be first when the next one lands.</h2>
+    <p class="sub reveal">New releases are published on GitHub. Follow there, or start with KEMAS today.</p>
+    <div class="actions reveal">
+      <a class="btn primary magnet" href="https://github.com/AmzSyafxProject">Follow on GitHub</a>
+      <a class="btn ghost magnet" href="https://github.com/AmzSyafxProject/KEMAS/releases/latest">Get KEMAS</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>© 2026 AMZProject Unity. Created by Amzar Syafiq, Ceritareka Studio.</span>
+  <a href="#top">Back to top</a>
+</footer>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let mx = innerWidth / 2, my = innerHeight / 2, sy = 0;
+
+  // header + reveal
+  const header = document.querySelector('header');
+  addEventListener('scroll', () => { sy = scrollY; header.classList.toggle('solid', sy > 40); }, { passive: true });
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .16 });
+  document.querySelectorAll('.reveal').forEach((el, i) => { el.style.transitionDelay = (i % 3) * 0.08 + 's'; io.observe(el); });
+  document.querySelectorAll('#headline .w > span').forEach((s, i) => s.style.animationDelay = (0.12 + i * 0.11) + 's');
+
+  // cursor glow
+  const glow = document.getElementById('glow');
+  addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
+
+  // magnetic buttons
+  document.querySelectorAll('.magnet').forEach(b => {
+    b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect(); b.style.setProperty('--x', ((e.clientX - r.left - r.width / 2) * .22) + 'px'); b.style.setProperty('--y', ((e.clientY - r.top - r.height / 2) * .3) + 'px'); });
+    b.addEventListener('pointerleave', () => { b.style.setProperty('--x', '0px'); b.style.setProperty('--y', '0px'); });
+  });
+
+  // poster tilt
+  const frame = document.getElementById('frame'), card = frame.querySelector('.card');
+  frame.addEventListener('pointermove', e => { const r = frame.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+    card.style.setProperty('--ry', (x * 16) + 'deg'); card.style.setProperty('--rx', (-y * 12) + 'deg'); });
+  frame.addEventListener('pointerleave', () => { card.style.setProperty('--ry', '-8deg'); card.style.setProperty('--rx', '4deg'); });
+
+  // starfield
+  const sky = document.getElementById('sky'), sc = sky.getContext('2d');
+  let W, H, stars = [], shoot = null;
+  function sizeSky() { W = innerWidth; H = innerHeight; sky.width = W * dpr; sky.height = H * dpr; sc.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const n = Math.round(W * H / 5200); stars = Array.from({ length: n }, () => ({ x: Math.random() * W, y: Math.random() * H, z: Math.random() * .9 + .1, t: Math.random() * 6.28 })); }
+  sizeSky(); addEventListener('resize', () => { sizeSky(); sizeOrbit(); });
+
+  // orbit system
+  const oc = document.getElementById('orbit'), ox = oc.getContext('2d'), tip = document.getElementById('tip');
+  let OS = 600;
+  function sizeOrbit() { const r = oc.getBoundingClientRect(); OS = r.width; oc.width = OS * dpr; oc.height = OS * dpr; ox.setTransform(dpr, 0, 0, dpr, 0, 0); }
+  sizeOrbit();
+  const bodies = [
+    { name: 'KEMAS', note: 'Live now', r: .23, speed: .22, size: 15, c1: '#7B5CFF', c2: '#2FD4FF', live: true, a: .4 },
+    { name: 'Next project', note: 'In development', r: .32, speed: -.15, size: 11, c1: '#FFC36B', c2: '#FF5C7A', a: 2.2 },
+    { name: 'Project in design', note: 'Designing', r: .40, speed: .11, size: 9, c1: '#9CF5FF', c2: '#2F8CFF', a: 4.1 },
+    { name: 'Early concept', note: 'Concept', r: .465, speed: -.08, size: 7, c1: '#D7C9FF', c2: '#7B5CFF', a: 1.0 },
+    { name: 'Early concept', note: 'Concept', r: .465, speed: -.08, size: 6, c1: '#B9FFD9', c2: '#18B886', a: 4.3 },
+  ];
+  let hover = -1;
+  oc.addEventListener('pointermove', e => { const r = oc.getBoundingClientRect(); const px = e.clientX - r.left, py = e.clientY - r.top;
+    hover = -1; bodies.forEach((b, i) => { if (b.sx !== undefined && Math.hypot(px - b.sx, py - b.sy) < b.size + 12) hover = i; });
+    if (hover >= 0) { tip.style.left = bodies[hover].sx + 'px'; tip.style.top = bodies[hover].sy + 'px'; tip.querySelector('b').textContent = bodies[hover].name; tip.querySelector('span').textContent = bodies[hover].note; tip.style.opacity = 1; oc.style.cursor = bodies[hover].live ? 'pointer' : 'default'; }
+    else { tip.style.opacity = 0; oc.style.cursor = 'default'; } });
+  oc.addEventListener('pointerleave', () => { hover = -1; tip.style.opacity = 0; });
+  oc.addEventListener('click', () => { if (hover >= 0 && bodies[hover].live) document.getElementById('kemas').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }); });
+
+  const tilt = .42;   // ellipse squash for the 3D feel
+  function drawOrbit(t) {
+    const S = OS, cx = S / 2, cy = S / 2;
+    ox.clearRect(0, 0, S, S);
+    const par = (my / innerHeight - .5) * .08;
+    const k = tilt + par;
+    // rings
+    [...new Set(bodies.map(b => b.r))].forEach((rr, i) => {
+      ox.beginPath(); ox.ellipse(cx, cy, rr * S, rr * S * k, -0.32, 0, Math.PI * 2);
+      ox.strokeStyle = `rgba(242,244,255,${0.10 + i * 0.02})`; ox.lineWidth = 1; ox.setLineDash(i % 2 ? [3, 7] : []); ox.stroke(); });
+    ox.setLineDash([]);
+    // positions
+    bodies.forEach(b => { const ang = b.a + t * b.speed; const ex = Math.cos(ang) * b.r * S, ey = Math.sin(ang) * b.r * S * k;
+      const rot = -0.32; b.sx = cx + ex * Math.cos(rot) - ey * Math.sin(rot); b.sy = cy + ex * Math.sin(rot) + ey * Math.cos(rot); b.front = Math.sin(ang) > 0; });
+    const drawBody = b => {
+      const s = b.size * (b.front ? 1.12 : .86) * (hover >= 0 && bodies[hover] === b ? 1.25 : 1);
+      if (b.live) { const pulse = 1 + Math.sin(t * 2.4) * .25; const g0 = ox.createRadialGradient(b.sx, b.sy, 0, b.sx, b.sy, s * 4 * pulse); g0.addColorStop(0, 'rgba(47,212,255,.45)'); g0.addColorStop(1, 'rgba(47,212,255,0)'); ox.fillStyle = g0; ox.beginPath(); ox.arc(b.sx, b.sy, s * 4 * pulse, 0, 7); ox.fill(); }
+      const g = ox.createRadialGradient(b.sx - s * .35, b.sy - s * .4, s * .1, b.sx, b.sy, s); g.addColorStop(0, '#fff'); g.addColorStop(.25, b.c1); g.addColorStop(1, b.c2);
+      ox.globalAlpha = b.live ? 1 : (b.front ? .9 : .55); ox.fillStyle = g; ox.beginPath(); ox.arc(b.sx, b.sy, s, 0, 7); ox.fill(); ox.globalAlpha = 1;
+      if (!b.live) { ox.strokeStyle = 'rgba(255,195,107,.5)'; ox.setLineDash([2, 4]); ox.beginPath(); ox.arc(b.sx, b.sy, s + 6, t * 1.5, t * 1.5 + 4.2); ox.stroke(); ox.setLineDash([]); }
+      if (b.live) { ox.font = '600 13px Unbounded, sans-serif'; ox.fillStyle = '#F2F4FF'; ox.textAlign = 'center'; ox.fillText('KEMAS', b.sx, b.sy + s + 24); }
+    };
+    bodies.filter(b => !b.front).forEach(drawBody);
+    // core
+    const cr = S * .085, beat = 1 + Math.sin(t * 1.3) * .04;
+    const halo = ox.createRadialGradient(cx, cy, cr * .5, cx, cy, cr * 3.4); halo.addColorStop(0, 'rgba(123,92,255,.55)'); halo.addColorStop(.5, 'rgba(47,212,255,.12)'); halo.addColorStop(1, 'rgba(47,212,255,0)');
+    ox.fillStyle = halo; ox.beginPath(); ox.arc(cx, cy, cr * 3.4, 0, 7); ox.fill();
+    const core = ox.createRadialGradient(cx - cr * .35, cy - cr * .4, cr * .1, cx, cy, cr * beat); core.addColorStop(0, '#FFFFFF'); core.addColorStop(.3, '#B8A8FF'); core.addColorStop(.75, '#7B5CFF'); core.addColorStop(1, '#2FD4FF');
+    ox.fillStyle = core; ox.beginPath(); ox.arc(cx, cy, cr * beat, 0, 7); ox.fill();
+    ox.font = '800 ' + Math.round(cr * .52) + 'px Unbounded, sans-serif'; ox.fillStyle = 'rgba(11,16,48,.85)'; ox.textAlign = 'center'; ox.textBaseline = 'middle'; ox.fillText('AMZ', cx, cy + 1); ox.textBaseline = 'alphabetic';
+    // connection threads from core to bodies
+    bodies.forEach(b => { const grd = ox.createLinearGradient(cx, cy, b.sx, b.sy); grd.addColorStop(0, 'rgba(123,92,255,.0)'); grd.addColorStop(1, b.live ? 'rgba(47,212,255,.35)' : 'rgba(255,138,91,.14)');
+      ox.strokeStyle = grd; ox.lineWidth = 1; ox.beginPath(); ox.moveTo(cx, cy); ox.lineTo(b.sx, b.sy); ox.stroke(); });
+    bodies.filter(b => b.front).forEach(drawBody);
+  }
+
+  function drawSky(t) {
+    sc.clearRect(0, 0, W, H);
+    const bg = sc.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#0B1030'); bg.addColorStop(1, '#070A22'); sc.fillStyle = bg; sc.fillRect(0, 0, W, H);
+    const px = (mx / W - .5), py = (my / H - .5);
+    for (const s of stars) {
+      const x = (s.x - px * 40 * s.z + W) % W, y = ((s.y - py * 40 * s.z - sy * .15 * s.z) % H + H) % H;
+      const a = .35 + .45 * Math.sin(t * 1.4 + s.t) * s.z;
+      sc.fillStyle = `rgba(242,244,255,${Math.max(.08, a)})`; sc.fillRect(x, y, s.z * 1.8, s.z * 1.8);
+    }
+    if (!shoot && Math.random() < .004) shoot = { x: Math.random() * W * .8, y: Math.random() * H * .4, l: 0 };
+    if (shoot) { shoot.l += 14; const g = sc.createLinearGradient(shoot.x, shoot.y, shoot.x + shoot.l, shoot.y + shoot.l * .45); g.addColorStop(0, 'rgba(242,244,255,0)'); g.addColorStop(1, 'rgba(242,244,255,.85)');
+      sc.strokeStyle = g; sc.lineWidth = 1.4; sc.beginPath(); sc.moveTo(shoot.x, shoot.y); sc.lineTo(shoot.x + shoot.l, shoot.y + shoot.l * .45); sc.stroke(); if (shoot.l > 260) shoot = null; }
+  }
+
+  let gx = mx, gy = my;
+  function frameLoop(ms) {
+    const t = ms / 1000;
+    gx += (mx - gx) * .08; gy += (my - gy) * .08; glow.style.left = gx + 'px'; glow.style.top = gy + 'px';
+    drawSky(t);
+    if (oc.getBoundingClientRect().bottom > 0) drawOrbit(t);
+    requestAnimationFrame(frameLoop);
+  }
+  if (reduce) { drawSky(0); drawOrbit(0); glow.style.opacity = 0; }
+  else requestAnimationFrame(frameLoop);
+  document.fonts && document.fonts.ready.then(() => { if (reduce) drawOrbit(0); });
+})();
+</script>
+</body>
+</html>
