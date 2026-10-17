@@ -49,6 +49,7 @@
   #intro .i-count, #intro .i-text, #intro .i-flash { z-index: 3; } #intro .i-ctl { z-index: 4; }
   @keyframes vshake { 0% { transform: translate(0, 0); } 50% { transform: translate(-4px, 3px); } 100% { transform: translate(3px, -2px); } }
   #intro.exit { opacity: 0; visibility: hidden; transition: opacity .6s .1s, visibility .6s .1s; }
+  #intro::after { content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; background: radial-gradient(ellipse at 50% 46%, transparent 38%, rgba(0,0,6,.55) 78%, rgba(0,0,4,.88) 100%); }
   #intro.skip { opacity: 0; visibility: hidden; transition: opacity .35s, visibility .35s; }
   #intro .i-flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
   #intro .i-load { position: absolute; inset: 0; display: grid; place-items: center; z-index: 2; transition: opacity .3s; pointer-events: none; }
@@ -517,8 +518,8 @@
       const canvas = document.createElement('canvas'); intro.prepend(canvas);
       renderer = new THREE.WebGLRenderer({ canvas, antialias: !lite, powerPreference: 'high-performance' });
       renderer.setPixelRatio(lite ? 1 : Math.min(Math.max(window.devicePixelRatio || 1, 2), 2.5));   // always supersample so the 3D logo edges stay smooth
-      renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
-      const scene = new THREE.Scene(); scene.background = new THREE.Color(0x02030c);
+      renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+      const scene = new THREE.Scene(); scene.background = new THREE.Color(0x010209);
       const camera = new THREE.PerspectiveCamera(40, 1, .1, 400);
 
       let z0 = 26, logoY = 1.6;
@@ -536,8 +537,8 @@
       };
       size(); addEventListener('resize', size);
 
-      scene.add(new THREE.AmbientLight(0x8890c0, .45));
-      const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(-6, 8, 10); scene.add(key);
+      scene.add(new THREE.AmbientLight(0x5a6aa0, .32));
+      const key = new THREE.DirectionalLight(0xdfe8ff, 1.35); key.position.set(-6, 8, 10); scene.add(key);
       const rim = new THREE.DirectionalLight(0x7b5cff, 2); rim.position.set(6, -4, -8); scene.add(rim);
       const fireLight = new THREE.PointLight(0xff8a3a, 0, 18); scene.add(fireLight);
 
@@ -587,8 +588,8 @@
         }
       };
       const explode = (x, y, z) => {
-        for (let j = 0, n = lite ? 360 : 900; j < n; j++) {
-          const u = Math.random() * 2 - 1, a = Math.random() * Math.PI * 2, s = Math.sqrt(1 - u * u), sp = 5 + Math.random() * 15, c = [[.45, .9, 1], [1, 1, 1], [.6, .45, 1], [1, .3, .85], [1, .72, .3], [.4, 1, .75]][Math.floor(Math.random() * 6)];
+        for (let j = 0, n = lite ? 260 : 600; j < n; j++) {
+          const u = Math.random() * 2 - 1, a = Math.random() * Math.PI * 2, s = Math.sqrt(1 - u * u), sp = 5 + Math.random() * 15, c = [[.45, .85, 1], [.9, .95, 1], [.5, .4, 1], [.3, .6, 1]][Math.floor(Math.random() * 4)];
           emit(x, y, z, Math.cos(a) * s * sp, u * sp, Math.sin(a) * s * sp, .7 + Math.random() * .8, c[0], c[1], c[2]);
         }
       };
@@ -620,57 +621,44 @@
         for (let n = 0; n < 7; n++) { const px = 60 + Math.random() * 136, py = 60 + Math.random() * 136, r = 50 + Math.random() * 70, g = x.createRadialGradient(px, py, 0, px, py, r);
           g.addColorStop(0, stops[n % stops.length] + 'cc'); g.addColorStop(.5, stops[(n + 1) % stops.length] + '55'); g.addColorStop(1, stops[0] + '00'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); }
         const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t; };
-      const nebPalettes = [['#7b5cff', '#22d3f5', '#ff4fd8'], ['#ff8a3a', '#ff4f8b', '#7b5cff'], ['#22d3f5', '#3a6bff', '#9bffea'], ['#ff4fd8', '#7b5cff', '#ffb85c']];
+      const nebPalettes = [['#1a1f6b', '#0b4f6c', '#2a1470'], ['#0d3b66', '#2b1a7a', '#06303f']];
       const nebulae = [];
-      for (let i = 0; i < (lite ? 7 : 14); i++) {
-        const m = new THREE.SpriteMaterial({ map: cloudTex(nebPalettes[i % 4]), transparent: true, opacity: .2 + Math.random() * .2, blending: THREE.AdditiveBlending, depthWrite: false, rotation: Math.random() * 6.28 });
+      for (let i = 0; i < (lite ? 3 : 5); i++) {
+        const m = new THREE.SpriteMaterial({ map: cloudTex(nebPalettes[i % 2]), transparent: true, opacity: .16 + Math.random() * .1, blending: THREE.AdditiveBlending, depthWrite: false, rotation: Math.random() * 6.28 });
         const sp = new THREE.Sprite(m), sc = 70 + Math.random() * 90; sp.scale.set(sc, sc, 1);
         sp.position.set((Math.random() - .5) * 150, (Math.random() - .5) * 80, -48 - Math.random() * 60); sp.userData = { r: (Math.random() - .5) * .05, d: Math.random() * 6.28, bx: sp.position.x, by: sp.position.y };
         scene.add(sp); nebulae.push(sp);
       }
-      // spiral galaxy
-      const GN = lite ? 2500 : 9000, gpos = new Float32Array(GN * 3), gcol = new Float32Array(GN * 3), tmpc = new THREE.Color();
-      for (let i = 0; i < GN; i++) {
-        const arm = i % 3, rr = Math.pow(Math.random(), .62) * 46, ang = rr * .22 + arm * 2.094 + (Math.random() - .5) * .55 * (1 + rr * .02);
-        gpos[i * 3] = Math.cos(ang) * rr + (Math.random() - .5) * 2.2; gpos[i * 3 + 1] = (Math.random() - .5) * (3 - rr * .04); gpos[i * 3 + 2] = Math.sin(ang) * rr + (Math.random() - .5) * 2.2;
-        tmpc.setHSL(.62 + .3 * (rr / 46) + (Math.random() - .5) * .05, .85, .55 + .3 * (1 - rr / 46)); gcol[i * 3] = tmpc.r; gcol[i * 3 + 1] = tmpc.g; gcol[i * 3 + 2] = tmpc.b;
-      }
-      const gGeo = new THREE.BufferGeometry(); gGeo.setAttribute('position', new THREE.BufferAttribute(gpos, 3)); gGeo.setAttribute('color', new THREE.BufferAttribute(gcol, 3));
-      const galaxy = new THREE.Points(gGeo, new THREE.PointsMaterial({ size: lite ? 1.6 : 1.3, map: glowTex, vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: .95 }));
-      galaxy.position.set(18, 10, -62); galaxy.rotation.x = .95; galaxy.rotation.z = -.35; galaxy.frustumCulled = false; scene.add(galaxy);
-      // planets
+      // (galaxy removed: calmer, more mysterious)
+      const galaxy = { rotation: { y: 0 } };
+      // one huge dark planet, lit only by a thin cold rim
       const planets = [];
-      const mkPlanet = (r, col, emis, x, y, z, ring) => {
-        const g = new THREE.Group(), body = new THREE.Mesh(new THREE.SphereGeometry(r, 64, 48), new THREE.MeshStandardMaterial({ color: col, emissive: emis, emissiveIntensity: .35, roughness: .55, metalness: .15 }));
-        g.add(body);
-        const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: col, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: .8 })); halo.scale.setScalar(r * 3.6); g.add(halo);
-        if (ring) { const rg = new THREE.Mesh(new THREE.TorusGeometry(r * 1.7, r * .07, 8, 160), new THREE.MeshBasicMaterial({ color: ring, transparent: true, opacity: .75 })); rg.rotation.x = 1.25; rg.rotation.y = .3; g.add(rg); }
-        g.position.set(x, y, z); g.userData = { bx: x, by: y, ph: Math.random() * 6.28 }; scene.add(g); planets.push(g); return g;
-      };
-      mkPlanet(4.2, 0xff8a3a, 0x7a2a00, -24, 7, -22, 0xffd0a0);
-      mkPlanet(2.6, 0x22d3f5, 0x0a4a66, 22, -9, -18, null);
-      mkPlanet(3.4, 0xff4fd8, 0x6a0f58, 26, 13, -34, 0xffc2f4);
-      if (!lite) { mkPlanet(1.7, 0x9bffea, 0x1d5a4c, -17, -13, -14, null); mkPlanet(5.2, 0x7b5cff, 0x2a1a88, -34, -4, -44, 0xb9a8ff); }
+      { const g = new THREE.Group(), R = 26;
+        g.add(new THREE.Mesh(new THREE.SphereGeometry(R, 96, 72), new THREE.MeshStandardMaterial({ color: 0x05070f, roughness: .9, metalness: 0 })));
+        const rim = new THREE.Mesh(new THREE.SphereGeometry(R * 1.035, 96, 72), new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.BackSide,
+          uniforms: {}, vertexShader: 'varying vec3 n; varying vec3 v; void main(){ n = normalize(normalMatrix * normal); vec4 mv = modelViewMatrix * vec4(position,1.0); v = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
+          fragmentShader: 'varying vec3 n; varying vec3 v; void main(){ float f = pow(1.0 - abs(dot(n, v)), 3.2); gl_FragColor = vec4(vec3(.16,.55,.9) * f * 1.1, f * .8); }' }));
+        g.add(rim); g.position.set(20, -38, -46); g.userData = { bx: 20, by: -38, ph: 0 }; scene.add(g); planets.push(g); }
       // orbiting colour lights give the metal logo rainbow reflections
-      const cLight1 = new THREE.PointLight(0xff4fd8, 2.4, 34), cLight2 = new THREE.PointLight(0x22d3f5, 2.4, 34), cLight3 = new THREE.PointLight(0xffb85c, 1.5, 30);
+      const cLight1 = new THREE.PointLight(0x4a7bff, 1.8, 34), cLight2 = new THREE.PointLight(0x22d3f5, 1.8, 34), cLight3 = new THREE.PointLight(0x6a3cff, 1.2, 30);
       scene.add(cLight1, cLight2, cLight3);
       const ringMat = ringSpin.children[0].material;
       // blast flare
       const flare = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xbfe9ff, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0 })); flare.scale.setScalar(1); scene.add(flare);
-      const flare2 = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xff4fd8, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0 })); flare2.scale.setScalar(1); scene.add(flare2);
+      const flare2 = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0x4a7bff, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0 })); flare2.scale.setScalar(1); scene.add(flare2);
       const epicUpdate = (t, dt) => {
         galaxy.rotation.y += dt * .06;
         for (const n of nebulae) { n.material.rotation += n.userData.r * dt; n.position.x = n.userData.bx + Math.sin(t * .1 + n.userData.d) * 3 + mx * -6; n.position.y = n.userData.by + Math.cos(t * .12 + n.userData.d) * 2 + my * -4; }
-        for (const g of planets) { g.position.x = g.userData.bx + Math.sin(t * .18 + g.userData.ph) * 1.6 - mx * 3; g.position.y = g.userData.by + Math.cos(t * .22 + g.userData.ph) * 1.2 - my * 2; g.children[0].rotation.y += dt * .25; }
+        for (const g of planets) { g.position.x = g.userData.bx + Math.sin(t * .18 + g.userData.ph) * 1.6 - mx * 3; g.position.y = g.userData.by + Math.cos(t * .22 + g.userData.ph) * 1.2 - my * 2; g.children[0].rotation.y += dt * .02; }
         const ly = logo.position.y;
         cLight1.position.set(Math.cos(t * 1.1) * 9, ly + Math.sin(t * .9) * 4, 6 + Math.sin(t * 1.1) * 4);
         cLight2.position.set(Math.cos(t * 1.1 + 2.1) * 9, ly + Math.sin(t * .9 + 2.1) * 4, 6 + Math.sin(t * 1.1 + 2.1) * 4);
         cLight3.position.set(Math.cos(t * 1.1 + 4.2) * 9, ly + Math.sin(t * .9 + 4.2) * 4, 6 + Math.sin(t * 1.1 + 4.2) * 4);
-        ringMat.emissive.setHSL((.72 + Math.sin(t * .9) * .14 + 1) % 1, .9, .42); ringMat.color.setHSL((.62 + Math.sin(t * .9 + 1) * .16 + 1) % 1, .75, .72);
+        ringMat.emissive.setHSL(.68 + Math.sin(t * .8) * .05, .8, .26); ringMat.color.setHSL(.6, .5, .6);
         const fb = clamp((t - T_BOOM) / 1.3);
         const fo = fb > 0 && fb < 1 ? Math.sin(fb * Math.PI) : 0;
-        flare.position.set(0, ly - .8, 1); flare.scale.setScalar(6 + 46 * fb); flare.material.opacity = fo * .55;
-        flare2.position.set(0, ly - .8, .5); flare2.scale.setScalar(4 + 70 * fb); flare2.material.opacity = fo * .28;
+        flare.position.set(0, ly - .8, 1); flare.scale.setScalar(6 + 46 * fb); flare.material.opacity = fo * .4;
+        flare2.position.set(0, ly - .8, .5); flare2.scale.setScalar(4 + 70 * fb); flare2.material.opacity = fo * .2;
       };
 
       return (t, dt) => {
@@ -724,7 +712,7 @@
         if (t > T_BOOM && t < T_BOOM + .6) shake = Math.max(shake, .9 * (1 - (t - T_BOOM) / .6));
         if (t > T_BLAST) shake = Math.max(shake, .35);
         const shx = (Math.random() - .5) * shake, shy = (Math.random() - .5) * shake;
-        const cz = z0 + (!hasVideo && t < T_IGN ? 3 * (1 - t / T_IGN) : 0) - (t > T_BOOM ? Math.min(1.5, (t - T_BOOM) * .7) : 0);
+        const cz = z0 + Math.max(0, 2.2 - t * .35) + (!hasVideo && t < T_IGN ? 3 * (1 - t / T_IGN) : 0) - (t > T_BOOM ? Math.min(1.5, (t - T_BOOM) * .7) : 0);
         camera.position.set(shx, shy, cz); camera.lookAt(shx * .3, shy * .3, 0);
 
         if (visible) { epicUpdate(t, dt); updateParticles(dt); renderer.render(scene, camera); }
