@@ -460,7 +460,7 @@
     // with the clip: real liftoff first, then the 3D A rises out of the white-out
     // whole intro runs about 6 seconds either way
     const V = hasVideo ? 3.0 : 0;
-    const T_IGN = 4.9, T_ARRIVE = T_IGN + 1.35, T_BOOM = T_ARRIVE + .45, T_BLAST = T_BOOM + 1.7, T_END = T_BLAST + .75;   // 0-4.9s dogfight, then the logo is fired as a missile
+    const T_IGN = 4.9, T_ARRIVE = T_IGN + 1.35, T_BOOM = T_ARRIVE + .05, T_BLAST = T_BOOM + .55, T_END = T_BLAST + .95;   // 0-4.9s dogfight, then the logo is fired as a missile
     if (hasVideo) intro.classList.add('vid');
     intro.style.setProperty('--d-word', (T_BOOM + .1) + 's'); intro.style.setProperty('--d-unity', (T_BOOM + .3) + 's'); intro.style.setProperty('--d-tag', (T_BOOM + .5) + 's');
 
