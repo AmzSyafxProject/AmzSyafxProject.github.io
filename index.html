@@ -280,6 +280,25 @@
     nav a:not(.keep) { display: none; }
     .scroll-cue { display: none; }
   }
+  @media (max-width: 560px) {
+    header { padding: 14px 16px; gap: 8px; }
+    .mark { font-size: 15px; gap: 8px; white-space: nowrap; }
+    .mark svg { width: 28px; height: 28px; }
+    nav { display: none; }
+    .beta-pill { margin-left: 0; padding: 4px 10px 4px 4px; font-size: 12px; }
+    .beta-pill .bp-tag { padding: 2px 7px; font-size: 10px; }
+    .hero { padding-top: 84px; }
+    .orbit-wrap { max-width: 340px; margin-bottom: -56px; }
+    .hero-chip { display: flex; flex-wrap: wrap; justify-content: center; text-align: center; gap: 4px 8px; border-radius: 18px; padding: 10px 14px; font-size: 13px; line-height: 1.4; }
+    .hero-chip i { display: none; }
+    h1 { text-align: center; }
+    .hero .lede, .hero .actions { text-align: center; justify-content: center; }
+    .btn { min-height: 48px; }
+    .feature .actions { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .feature .actions .btn { width: 100%; justify-content: center; text-align: center; }
+    .beta-card { max-width: none; }
+    .frame { margin-top: 28px; }
+  }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .hero h1 .w > span, .hero p.lede, .actions, .reveal { transform: none !important; opacity: 1 !important; }
