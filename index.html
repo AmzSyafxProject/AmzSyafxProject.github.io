@@ -46,6 +46,7 @@
   #intro.play .i-video { animation: vshake .09s steps(2) .5s 28; }
   #intro .i-credit { position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%); z-index: 3; font-size: 12px; letter-spacing: .08em; color: rgba(242,244,255,.7); transition: opacity .4s; }
   #intro.gl .i-credit { opacity: 0; }
+  #intro .i-count { display: none; }
   #intro .i-count, #intro .i-text, #intro .i-flash { z-index: 3; } #intro .i-ctl { z-index: 4; }
   @keyframes vshake { 0% { transform: translate(0, 0); } 50% { transform: translate(-4px, 3px); } 100% { transform: translate(3px, -2px); } }
   #intro.exit { opacity: 0; visibility: hidden; transition: opacity .6s .1s, visibility .6s .1s; }
@@ -309,9 +310,7 @@
 </head>
 <body class="intro-wait">
 <div id="intro" role="dialog" aria-label="AMZProject Unity intro">
-  <video class="i-video" src="assets/artemis-liftoff.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
   <div class="i-vshade" aria-hidden="true"></div>
-  <div class="i-credit" aria-hidden="true">Video: NASA</div>
   <div class="i-load" aria-hidden="true"><i></i></div>
   <div class="i-count" aria-hidden="true"><span>3</span><span>2</span><span>1</span></div>
   <div class="i-text" aria-hidden="true">
@@ -338,7 +337,7 @@
   const lite = (navigator.hardwareConcurrency || 8) <= 2 || (navigator.deviceMemory || 8) <= 2;   // only genuinely weak devices; phones and laptops get full quality
 
   const soundBtn = intro.querySelector('.i-sound'), soundLabel = soundBtn.querySelector('span'), skipBtn = intro.querySelector('.i-skip'), flashEl = intro.querySelector('.i-flash');
-  const video = intro.querySelector('.i-video');
+  const video = intro.querySelector('.i-video') || document.createElement('video');   // clip retired: the intro is now a fully generated scene
   let soundOn = true; try { soundOn = localStorage.getItem('amz-sound') !== 'off'; } catch (e) {}
   let state = 'load', renderer = null, raf = 0, removed = false;
   const dropVideo = () => { video.removeAttribute('src'); video.load(); intro.querySelectorAll('.i-video, .i-vshade, .i-credit').forEach(el => el.remove()); };
@@ -444,7 +443,7 @@
   const giveUp = setTimeout(() => { if (state === 'load') finish(true); }, 11000);
 
   (async () => {
-    let hasVideo = await videoReady;
+    let hasVideo = false;
     if (state !== 'load') return;
     if (hasVideo) { try { video.pause(); video.currentTime = .6; video.playbackRate = 2.4; await video.play(); } catch (e) { hasVideo = false; } }
     if (!hasVideo) {
@@ -461,18 +460,18 @@
     // with the clip: real liftoff first, then the 3D A rises out of the white-out
     // whole intro runs about 6 seconds either way
     const V = hasVideo ? 3.0 : 0;
-    const T_IGN = hasVideo ? V : .8, T_ARRIVE = hasVideo ? V + .6 : 2.0, T_BOOM = T_ARRIVE + .5, T_BLAST = hasVideo ? T_BOOM + 1.1 : T_BOOM + 2.3, T_END = T_BLAST + .75;
+    const T_IGN = 4.9, T_ARRIVE = T_IGN + 1.35, T_BOOM = T_ARRIVE + .45, T_BLAST = T_BOOM + 1.7, T_END = T_BLAST + .75;   // 0-4.9s dogfight, then the logo is fired as a missile
     if (hasVideo) intro.classList.add('vid');
     intro.style.setProperty('--d-word', (T_BOOM + .1) + 's'); intro.style.setProperty('--d-unity', (T_BOOM + .3) + 's'); intro.style.setProperty('--d-tag', (T_BOOM + .5) + 's');
 
+    const pass = (n, d) => { noise(n, d, 'bandpass', 250, 2800, .9, .34, d * .45); };
+    const gun = n => noise(n, .1, 'bandpass', 2600, 900, 2, .22, .005);
     const cues = [
-      [0, () => startRumble()], [0.02, n => beep(n, 660)], [0.27, n => beep(n, 660)], [0.52, n => beep(n, 990)],
-      ...(hasVideo ? [
-        [.55, n => { boom(n, false); roar(n, V - .5, .5); }],
-        [V - .35, n => { noise(n, .5, 'bandpass', 500, 5000, 1, .3, .3); }],
-        [T_IGN, n => { stopRumble(.4); boom(n, false); roar(n, 1, .35); }]
-      ] : [[T_IGN, n => { boom(n, false); roar(n, 1.8, .45); }]]),
-      [T_ARRIVE, n => { stopRumble(.6); noise(n, .7, 'bandpass', 400, 3200, 1.2, .2, .4); }],
+      [0, () => startRumble()], [0.1, n => pass(n, 1.3)], [1.55, n => pass(n, 1.2)], [2.6, n => pass(n, 1.1)],
+      [1.9, gun], [2.05, gun], [2.2, gun], [2.35, gun], [2.5, gun],
+      [3.4, n => { tone(n, 'sine', 90, 40, .5, .8); noise(n, .6, 'lowpass', 1800, 200, .8, .3, .01); }],
+      [T_IGN, n => { stopRumble(.5); noise(n, 1.4, 'bandpass', 500, 4200, .9, .38, .12); tone(n, 'sawtooth', 70, 160, .12, 1.3); }],
+      [T_ARRIVE, n => { noise(n, .6, 'bandpass', 400, 3200, 1.2, .22, .35); }],
       [T_BOOM, n => { boom(n, true); sparkle(n + .08); chime(n + .05, 523.25, .14, 2.6); chime(n + .08, 783.99, .1, 2.6); }],
       [T_BLAST, n => { roar(n, 1.1, .5); noise(n, 1, 'bandpass', 300, 4000, 1, .25, .7); }]
     ].map(([at, fn]) => ({ at, fn, done: false }));
@@ -566,7 +565,7 @@
       shock.visible = false; scene.add(shock);
 
       /* particles: thruster fire + explosion sparks */
-      const PN = lite ? 900 : 2800, ppos = new Float32Array(PN * 3), pcol = new Float32Array(PN * 3), pvel = new Float32Array(PN * 3), plife = new Float32Array(PN), pmax = new Float32Array(PN), pbase = new Float32Array(PN * 3);
+      const PN = lite ? 1800 : 6000, ppos = new Float32Array(PN * 3), pcol = new Float32Array(PN * 3), pvel = new Float32Array(PN * 3), plife = new Float32Array(PN), pmax = new Float32Array(PN), pbase = new Float32Array(PN * 3);
       for (let i = 0; i < PN; i++) ppos[i * 3 + 1] = -999;
       let pc = 0;
       const emit = (x, y, z, vx, vy, vz, life, r, g, b) => {
@@ -631,14 +630,9 @@
       }
       // (galaxy removed: calmer, more mysterious)
       const galaxy = { rotation: { y: 0 } };
-      // one huge dark planet, lit only by a thin cold rim
       const planets = [];
-      { const g = new THREE.Group(), R = 26;
-        g.add(new THREE.Mesh(new THREE.SphereGeometry(R, 96, 72), new THREE.MeshStandardMaterial({ color: 0x05070f, roughness: .9, metalness: 0 })));
-        const rim = new THREE.Mesh(new THREE.SphereGeometry(R * 1.035, 96, 72), new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.BackSide,
-          uniforms: {}, vertexShader: 'varying vec3 n; varying vec3 v; void main(){ n = normalize(normalMatrix * normal); vec4 mv = modelViewMatrix * vec4(position,1.0); v = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
-          fragmentShader: 'varying vec3 n; varying vec3 v; void main(){ float f = pow(1.0 - abs(dot(n, v)), 3.2); gl_FragColor = vec4(vec3(.16,.55,.9) * f * 1.1, f * .8); }' }));
-        g.add(rim); g.position.set(20, -38, -46); g.userData = { bx: 20, by: -38, ph: 0 }; scene.add(g); planets.push(g); }
+      const moon = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0x7f9bd8, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: .5 })); moon.scale.setScalar(170); moon.position.set(-34, 18, -150); scene.add(moon);
+      const moon2 = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xdfe8ff, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: .5 })); moon2.scale.setScalar(30); moon2.position.set(-34, 18, -149); scene.add(moon2);
       // orbiting colour lights give the metal logo rainbow reflections
       const cLight1 = new THREE.PointLight(0x4a7bff, 1.8, 34), cLight2 = new THREE.PointLight(0x22d3f5, 1.8, 34), cLight3 = new THREE.PointLight(0x6a3cff, 1.2, 30);
       scene.add(cLight1, cLight2, cLight3);
@@ -646,6 +640,76 @@
       // blast flare
       const flare = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xbfe9ff, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0 })); flare.scale.setScalar(1); scene.add(flare);
       const flare2 = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0x4a7bff, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0 })); flare2.scale.setScalar(1); scene.add(flare2);
+
+      /* ===== DOGFIGHT: two fighter jets, contrails, tracers, flares; the lead jet fires the logo ===== */
+      const mkJet = (col, glow) => {
+        const g = new THREE.Group(), mat = new THREE.MeshStandardMaterial({ color: col, metalness: .5, roughness: .5, side: THREE.DoubleSide });
+        const fus = new THREE.Mesh(new THREE.CylinderGeometry(.07, .5, 5.2, 18), mat); fus.rotation.x = Math.PI / 2; g.add(fus);
+        const tri = (pts) => { const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pts), 3)); geo.computeVertexNormals(); return new THREE.Mesh(geo, mat); };
+        g.add(tri([.3, 0, 1.0, 3.1, 0, -2.1, .3, 0, -2.2])); g.add(tri([-.3, 0, 1.0, -3.1, 0, -2.1, -.3, 0, -2.2]));            // delta wings
+        g.add(tri([.25, 0, -1.9, 1.5, 0, -2.9, .25, 0, -2.7])); g.add(tri([-.25, 0, -1.9, -1.5, 0, -2.9, -.25, 0, -2.7]));        // tailplanes
+        const fin1 = tri([0, .3, -1.2, 0, 1.55, -2.7, 0, .3, -2.7]); fin1.position.x = .38; fin1.rotation.z = -.22; g.add(fin1);
+        const fin2 = tri([0, .3, -1.2, 0, 1.55, -2.7, 0, .3, -2.7]); fin2.position.x = -.38; fin2.rotation.z = .22; g.add(fin2);
+        const can = new THREE.Mesh(new THREE.SphereGeometry(.34, 16, 12), new THREE.MeshStandardMaterial({ color: 0x0a1020, metalness: .9, roughness: .12 })); can.scale.set(.9, .7, 2.1); can.position.set(0, .38, .7); g.add(can);
+        const flame = new THREE.Mesh(new THREE.ConeGeometry(.3, 3.2, 12, 1, true), new THREE.MeshBasicMaterial({ color: glow, transparent: true, opacity: .75, blending: THREE.AdditiveBlending, depthWrite: false }));
+        flame.rotation.x = -Math.PI / 2; flame.position.z = -4.1; g.add(flame);
+        const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: glow, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: .95 })); halo.scale.setScalar(3.6); halo.position.z = -3; g.add(halo);
+        g.userData = { flame, halo }; g.visible = false; scene.add(g); return g;
+      };
+      const jetA = mkJet(0x2c3548, 0xff9a4a), jetB = mkJet(0x10141e, 0xff5a3a);
+      const jP = new THREE.Vector3(), jQ = new THREE.Vector3(), jUp = new THREE.Vector3(0, 1, 0);
+      const poseJet = (jet, pos, look, roll, t) => {
+        jet.position.copy(pos); jet.lookAt(look); jet.rotateZ(roll); jet.visible = true; jet.scale.setScalar(t > 3.3 ? 2.4 : 1);
+        const f = 1 + Math.sin(t * 60 + pos.x) * .08; jet.userData.flame.scale.set(1, f, 1); jet.userData.halo.material.opacity = .55 + Math.sin(t * 47) * .12;
+      };
+      // soft clouds sliding past for speed and depth
+      const puff = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+        g.addColorStop(0, 'rgba(150,170,210,.55)'); g.addColorStop(.5, 'rgba(90,110,160,.22)'); g.addColorStop(1, 'rgba(60,80,130,0)'); x.fillStyle = g; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })();
+      const clouds = []; for (let i = 0; i < (lite ? 10 : 22); i++) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: puff, transparent: true, opacity: .10 + Math.random() * .12, depthWrite: false })); const sc = 22 + Math.random() * 46; sp.scale.set(sc * 2.4, sc * .8, 1);
+        sp.position.set((Math.random() - .5) * 190, (Math.random() - .5) * 40, -20 - Math.random() * 90); scene.add(sp); clouds.push(sp); }
+      // tracer rounds + muzzle light
+      const TR = 10, trGeo = new THREE.BufferGeometry(), trPos = new Float32Array(TR * 6); trGeo.setAttribute('position', new THREE.BufferAttribute(trPos, 3));
+      const tracers = new THREE.LineSegments(trGeo, new THREE.LineBasicMaterial({ color: 0xffc98a, transparent: true, opacity: .95, blending: THREE.AdditiveBlending })); tracers.frustumCulled = false; scene.add(tracers);
+      const muzzle = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xffd9a0, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0 })); muzzle.scale.setScalar(6); scene.add(muzzle);
+      const lerp = (a, b, k) => a + (b - a) * k, ease = k => k * k * (3 - 2 * k);
+      const jetPos = (who, t) => {   // returns world position of a jet in the current shot
+        const o = who === 'A' ? 0 : 1;
+        if (t < 1.7) { const u = t / 1.7; return new THREE.Vector3(lerp(54, -54, u) + o * 13, 3 + Math.sin(u * 5 + o) * 2.5 - o * 1.2, -10 - o * 3); }
+        if (t < 3.3) { const a = (t - 1.7) * 1.05 - o * .42; return new THREE.Vector3(Math.cos(a) * 30, Math.sin(a * 1.9) * 7 + 1, Math.sin(a) * 26 - 46); }
+        const u = clamp((t - 3.3) / (T_IGN - 3.3)); return new THREE.Vector3(lerp(26, 9, ease(u)) - o * 5, lerp(9, 6, u) + o * 1.5, lerp(-175, -50, ease(u)) - o * 17);
+      };
+      const missileStart = new THREE.Vector3(9, 6, -50);
+      const jetStep = (t, dt) => {
+        const pre = t < T_IGN + 1.2;
+        jetA.visible = jetB.visible = pre;
+        clouds.forEach(c => { const sp = t < 1.7 ? 60 : t < 3.3 ? 38 : 14; c.position.x -= sp * dt; if (c.position.x < -100) { c.position.x += 200; c.position.y = (Math.random() - .5) * 40; } });
+        if (!pre) return;
+        const pA = jetPos('A', t), pB = jetPos('B', t), pA2 = jetPos('A', t + .05), pB2 = jetPos('B', t + .05);
+        const rollA = Math.sin(t * 3.2) * (t < 3.3 ? 1.5 : .25), rollB = Math.sin(t * 2.6 + 1) * (t < 3.3 ? 1.1 : .2);
+        poseJet(jetA, pA, pA2, rollA, t); poseJet(jetB, pB, pB2, rollB, t);
+        // contrails (long white streams) + afterburner sparks
+        const far = Math.max(.5, Math.min(2.2, 1 + Math.abs(pA.z) / 70));
+        for (const [jet, pos, nf] of [[jetA, pA, 1], [jetB, pB, 1]]) {
+          jP.set(0, 0, -3.6).applyQuaternion(jet.quaternion).add(pos);
+          for (let k = 0; k < (lite ? 2 : 4); k++) emit(jP.x + (Math.random() - .5) * .5, jP.y + (Math.random() - .5) * .5, jP.z + (Math.random() - .5) * .5, (Math.random() - .5) * .5, (Math.random() - .5) * .5, (Math.random() - .5) * .5, 1.1 + Math.random() * .9, .5 * far, .58 * far, .72 * far);
+          for (const wx of [-3, 3]) { jQ.set(wx, 0, -2.2).applyQuaternion(jet.quaternion).add(pos); if (Math.random() < .55) emit(jQ.x, jQ.y, jQ.z, 0, 0, 0, .8 + Math.random() * .6, .36 * far, .42 * far, .55 * far); }
+        }
+        // jet B opens fire on A during the chase, A throws decoy flares and weaves
+        const fire = t > 1.85 && t < 2.65;
+        for (let i = 0; i < TR; i++) {
+          const k = i * 6, ph = ((t * 3.2 + i / TR) % 1);
+          if (!fire) { trPos[k] = trPos[k + 3] = 0; trPos[k + 1] = trPos[k + 4] = -999; trPos[k + 2] = trPos[k + 5] = 0; continue; }
+          const sx = i % 2 ? .6 : -.6; jP.set(sx, -.2, 2.8).applyQuaternion(jetB.quaternion).add(pB); jQ.copy(pA).sub(jP);
+          const d = jQ.length(); jQ.normalize();
+          trPos[k] = jP.x + jQ.x * ph * d; trPos[k + 1] = jP.y + jQ.y * ph * d; trPos[k + 2] = jP.z + jQ.z * ph * d;
+          const e = Math.min(1, ph + .12); trPos[k + 3] = jP.x + jQ.x * e * d; trPos[k + 4] = jP.y + jQ.y * e * d; trPos[k + 5] = jP.z + jQ.z * e * d;
+        }
+        trGeo.attributes.position.needsUpdate = true;
+        if (t > 2.35 && t < 3.15 && Math.random() < .55) { for (let k = 0; k < 3; k++) emit(pA.x, pA.y - .6, pA.z, (Math.random() - .5) * 9, -3 - Math.random() * 6, (Math.random() - .5) * 9, 1.1 + Math.random() * .8, .75, .48, .2); }
+        // muzzle flash as the lead jet launches the logo
+        const mf = t > T_IGN - .05 && t < T_IGN + .3 ? 1 - (t - (T_IGN - .05)) / .35 : 0;
+        muzzle.position.copy(missileStart); muzzle.material.opacity = Math.max(0, mf); muzzle.scale.setScalar(6 + 12 * (1 - mf));
+      };
       const epicUpdate = (t, dt) => {
         galaxy.rotation.y += dt * .06;
         for (const n of nebulae) { n.material.rotation += n.userData.r * dt; n.position.x = n.userData.bx + Math.sin(t * .1 + n.userData.d) * 3 + mx * -6; n.position.y = n.userData.by + Math.cos(t * .12 + n.userData.d) * 2 + my * -4; }
@@ -669,6 +733,7 @@
         if (t < T_IGN) speed = 2 + t * 4;
         else if (t < T_ARRIVE + .4) speed = 6 + 150 * Math.sin(clamp((t - T_IGN) / (T_ARRIVE + .4 - T_IGN)) * Math.PI);
         if (t > T_BLAST) speed += 260 * inCubic(clamp((t - T_BLAST) / .8));
+        streaks.visible = t > T_BLAST;
         if (visible) {
           const len = Math.min(26, .06 + speed * .05);
           for (let i = 0; i < N; i++) {
@@ -679,14 +744,22 @@
         }
 
         const pf = clamp((t - T_IGN) / (T_ARRIVE - T_IGN));
-        rocket.position.y = t < T_IGN ? -22 : -22 * (1 - outQuart(pf)) + (t > T_ARRIVE ? Math.sin((t - T_ARRIVE) * 2.2) * .12 : 0);
-        rocket.rotation.y = (1 - outCubic(pf)) * Math.PI * 2;
-        rocket.rotation.z = Math.sin(t * 24) * .025 * (1 - pf);
+        // the logo is the missile: fired from the lead jet far away, accelerating toward the camera in a spiral, then locking upright
+        const mk = Math.pow(pf, 1.7);
+        rocket.visible = t >= T_IGN;
+        rocket.position.set((missileStart.x * (1 - mk)) + Math.sin(pf * 11) * 3.2 * (1 - pf), (missileStart.y - logoY) * (1 - mk) + Math.cos(pf * 9) * 1.6 * (1 - pf), missileStart.z * (1 - mk) + (t > T_ARRIVE ? Math.sin((t - T_ARRIVE) * 2.2) * .12 : 0));
+        rocket.rotation.y = (1 - outCubic(pf)) * Math.PI * 3;
+        rocket.rotation.z = (1 - outQuart(pf)) * Math.PI * 6;
+        rocket.scale.setScalar(t < T_IGN ? .01 : 1);
         let power = 0;
-        if (t > T_IGN && t < T_ARRIVE - .1) power = 1.15 - pf * .7;
+        if (t > T_IGN && t < T_ARRIVE - .05) power = 1.1;
         if (t > T_BLAST) power = 1.4;
-        if (power > 0 && state === 'play') thrust(dt, power);
-        fireLight.intensity = power * 3; fireLight.position.set(0, logo.position.y + rocket.position.y - 4.5, 2);
+        if (power > 0 && state === 'play') {
+          if (t > T_BLAST) thrust(dt, power);
+          else { const n = Math.round(power * (lite ? 520 : 1400) * dt), wx = rocket.position.x, wy = logo.position.y + rocket.position.y, wz = rocket.position.z;
+            for (let j = 0; j < n; j++) { const hot = Math.random() < .5; emit(wx + (Math.random() - .5) * .8, wy - 1.2 + (Math.random() - .5) * .8, wz - 1.5, (Math.random() - .5) * 2, (Math.random() - .5) * 2, -(6 + Math.random() * 10), .5 + Math.random() * .9, hot ? 1 : .6, hot ? .72 : .66, hot ? .3 : .62); } }
+        }
+        fireLight.intensity = power * 3.4; fireLight.position.set(rocket.position.x, logo.position.y + rocket.position.y - 1, rocket.position.z - 3);
 
         const pr = clamp((t - T_ARRIVE) / (T_BOOM - T_ARRIVE));
         ringRoll.visible = t > T_ARRIVE;
@@ -713,11 +786,16 @@
         if (t > T_BLAST) shake = Math.max(shake, .35);
         const shx = (Math.random() - .5) * shake, shy = (Math.random() - .5) * shake;
         const cz = z0 + Math.max(0, 2.2 - t * .35) + (!hasVideo && t < T_IGN ? 3 * (1 - t / T_IGN) : 0) - (t > T_BOOM ? Math.min(1.5, (t - T_BOOM) * .7) : 0);
-        camera.position.set(shx, shy, cz); camera.lookAt(shx * .3, shy * .3, 0);
+        if (t < 3.3) {
+          const pA = jetPos('A', t), pB = jetPos('B', t);
+          if (t < 1.7) { camera.position.set(shx * .6, 1.5 + shy * .6, 30 - t * .8); camera.lookAt(pA.x * .45, 2, -10); }
+          else { const dir = jQ.copy(pB).sub(jetPos('B', t - .08)).normalize(); const side = jP.copy(dir).cross(jUp).normalize(); camera.position.copy(pB).addScaledVector(dir, -15).addScaledVector(side, 11).add(new THREE.Vector3(shx, 5 + shy, 0)); camera.lookAt(pA.clone().lerp(pB, .35)); camera.rotateZ(Math.sin(t * 2.4) * .12); }
+        } else { camera.position.set(shx, shy, cz); camera.lookAt(shx * .3, shy * .3, t < T_IGN ? -40 : 0); }
 
-        if (visible) { epicUpdate(t, dt); updateParticles(dt); renderer.render(scene, camera); }
+        if (visible) { jetStep(t, dt); epicUpdate(t, dt); updateParticles(dt); renderer.render(scene, camera); }
         if (t > T_BLAST && !leaving) { leaving = true; intro.classList.add('leave'); }
-        return t - flashT < .5 ? .85 * (1 - (t - flashT) / .5) : 0;
+        const cut = [1.7, 3.3].reduce((m, c) => Math.max(m, t > c && t < c + .14 ? .55 * (1 - (t - c) / .14) : 0), 0);
+        return Math.max(cut, t - flashT < .5 ? .42 * (1 - (t - flashT) / .5) : 0);
       };
     }
   }
