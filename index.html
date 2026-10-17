@@ -295,7 +295,7 @@
   /* device budget: lighter scene on small or low-power devices, no clip on data saver or slow networks */
   const conn = navigator.connection || {};
   const slowNet = !!conn.saveData || /(^|-)2g|3g/.test(conn.effectiveType || '');
-  const lite = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4 || matchMedia('(max-width: 760px)').matches;
+  const lite = (navigator.hardwareConcurrency || 8) <= 2 || (navigator.deviceMemory || 8) <= 2 || matchMedia('(max-width: 480px)').matches;
 
   const soundBtn = intro.querySelector('.i-sound'), soundLabel = soundBtn.querySelector('span'), skipBtn = intro.querySelector('.i-skip'), flashEl = intro.querySelector('.i-flash');
   const video = intro.querySelector('.i-video');
@@ -477,7 +477,7 @@
 
       const canvas = document.createElement('canvas'); intro.prepend(canvas);
       renderer = new THREE.WebGLRenderer({ canvas, antialias: !lite, powerPreference: 'high-performance' });
-      renderer.setPixelRatio(lite ? 1 : Math.min(window.devicePixelRatio || 1, 1.5));
+      renderer.setPixelRatio(lite ? 1 : Math.min(window.devicePixelRatio || 1, 2));
       renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
       const scene = new THREE.Scene(); scene.background = new THREE.Color(0x03040f);
       const camera = new THREE.PerspectiveCamera(40, 1, .1, 400);
@@ -890,7 +890,7 @@
 <script>
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
   let mx = innerWidth / 2, my = innerHeight / 2, sy = 0;
 
   // header + reveal
