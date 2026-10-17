@@ -138,7 +138,9 @@
   .kemas-title svg { width: clamp(56px, 6vw, 84px); height: auto; flex: none; filter: drop-shadow(0 14px 30px rgba(123,92,255,.5)); }
   .kemas-tag { font-family: var(--display); font-weight: 400; font-size: clamp(20px, 2vw, 28px); margin-top: 18px; color: #C9C0FF; }
   .feature p.body { margin-top: 20px; color: var(--mist); max-width: 48ch; }
-  .facts { list-style: none; margin-top: 28px; display: grid; gap: 12px; }
+  .facts { list-style: none; margin-top: 24px; display: grid; gap: 10px; }
+  .feature .actions { margin-top: 26px; }
+  .dl-note { margin-top: 12px; font-size: 13px; color: var(--mist); max-width: 52ch; } .dl-note a { color: var(--star); } .dl-warn { opacity: .75; }
   .facts li { display: flex; gap: 14px; align-items: baseline; color: var(--star); }
   .facts li::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 2px; transform: rotate(45deg) translateY(-2px); background: linear-gradient(135deg, var(--violet), var(--aqua)); }
   .feature .actions { opacity: 1; animation: none; }
@@ -148,14 +150,15 @@
   .beta-pill .bp-time { font-variant-numeric: tabular-nums; font-weight: 600; }
   .beta-pill:hover { background: rgba(123,92,255,.26); }
   @media (max-width: 560px) { .beta-pill { margin-left: 0; font-size: 12px; } }
-  .beta-card { margin-top: 28px; max-width: 520px; padding: 22px 24px; border-radius: 20px; border: 1px solid rgba(123,92,255,.35); background: linear-gradient(160deg, rgba(123,92,255,.14), rgba(34,211,245,.06)); }
+  .beta-card { margin-top: 22px; max-width: 460px; padding: 16px 18px; border-radius: 20px; border: 1px solid rgba(123,92,255,.35); background: linear-gradient(160deg, rgba(123,92,255,.14), rgba(34,211,245,.06)); }
+  .beta-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
   .beta-card h3 { font-family: var(--display); font-weight: 700; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--aqua); }
-  .beta-card .when { margin-top: 6px; color: var(--star); font-size: 15px; }
-  .cd { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px; }
-  .cd div { text-align: center; padding: 12px 4px; border-radius: 14px; background: rgba(3,4,15,.55); border: 1px solid var(--line); }
-  .cd b { display: block; font-family: var(--display); font-weight: 800; font-size: clamp(24px, 3.4vw, 34px); line-height: 1; font-variant-numeric: tabular-nums; }
+  .beta-card .when { color: var(--mist); font-size: 13.5px; } .beta-card .when b { color: var(--star); }
+  .cd { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+  .cd div { text-align: center; padding: 9px 4px; border-radius: 14px; background: rgba(3,4,15,.55); border: 1px solid var(--line); }
+  .cd b { display: block; font-family: var(--display); font-weight: 800; font-size: clamp(20px, 2.6vw, 26px); line-height: 1; font-variant-numeric: tabular-nums; }
   .cd span { display: block; margin-top: 6px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
-  .beta-thanks { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--mist); font-size: 14.5px; line-height: 1.6; }
+  .beta-thanks { margin-top: 12px; color: var(--mist); font-size: 13.5px; line-height: 1.5; }
   .beta-thanks b { color: var(--star); font-weight: 600; }
   .beta-done .cd { display: none; }
   .dl-note { margin-top: 16px; max-width: 470px; font-size: 13.5px; line-height: 1.55; color: var(--star); opacity: .62; }
@@ -693,7 +696,7 @@
   <section id="kemas" aria-labelledby="kemas-h">
     <div class="feature" data-no="01">
       <div class="reveal">
-        <div class="status"><i></i>Project 001 · Beta Test · Version 3.2.2</div>
+        <div class="status"><i></i>Project 001 · Beta Test · Version 3.3.2</div>
         <h2 class="kemas-title" id="kemas-h">
           <svg viewBox="0 0 512 512" aria-hidden="true"><defs><linearGradient id="kg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B5CFF"/><stop offset=".55" stop-color="#5A7BFF"/><stop offset="1" stop-color="#22D3F5"/></linearGradient></defs>
             <rect x="16" y="16" width="480" height="480" rx="124" fill="url(#kg)"/><rect x="150" y="132" width="60" height="248" rx="30" fill="#fff"/>
@@ -704,28 +707,23 @@
         </h2>
         <div class="kemas-tag">Your PC, Kemas.</div>
         <p class="body">A native Windows app that clears junk, sorts your folders and frees memory in one click — with safeguards that never touch what matters.</p>
-        <div class="beta-card" id="beta">
-          <h3>Public Beta Test</h3>
-          <p class="when">Official public release: <b>Sunday, 25 October 2026</b> (Malaysia time)</p>
-          <div class="cd" id="cd" role="timer" aria-live="off"><div><b data-u="d">--</b><span>Days</span></div><div><b data-u="h">--</b><span>Hours</span></div><div><b data-u="m">--</b><span>Minutes</span></div><div><b data-u="s">--</b><span>Seconds</span></div></div>
-          <p class="beta-thanks"><b>Congratulations and thank you</b> to every beta tester who has downloaded KEMAS. Your time, feedback and trust are shaping the official release. Found something? <a href="https://tally.so/r/4aXGXo" target="_blank" rel="noopener">Report an issue or share an idea</a>.</p>
-        </div>
-        <ul class="facts">
-          <li>Smart Clean for temp files, caches and the Recycle Bin</li>
-          <li>Deep Clean for shader and app caches, crash dumps and Windows leftovers</li>
-          <li>New: Road to 100, a step-by-step guide to a perfect health score</li>
-          <li>Faster scanning, a guided first-run setup and built-in Help &amp; Support</li>
-          <li>File Organizer with your own folder names and rules</li>
-          <li>Memory Booster and Startup Apps for a faster PC</li>
-          <li>Updates itself, safely, whenever a new version lands</li>
-        </ul>
         <div class="actions">
           <a class="btn primary magnet" href="https://github.com/AmzSyafxProject/KEMAS/releases/latest/download/KEMAS-Setup.exe">Download installer</a>
-          <a class="btn ghost magnet" href="https://github.com/AmzSyafxProject/KEMAS/releases/latest/download/KEMAS.exe">Portable KEMAS.exe</a>
-          <a class="btn ghost magnet" href="https://github.com/AmzSyafxProject/KEMAS">View on GitHub</a>
+          <a class="btn ghost magnet" href="https://github.com/AmzSyafxProject/KEMAS/releases/latest/download/KEMAS.exe">Portable .exe</a>
         </div>
-        <p class="dl-note">The installer sets KEMAS up with a short wizard, Start menu shortcut and uninstall entry. The portable file runs without installing. Microsoft Store version: coming soon, once certification finishes.</p>
-        <p class="dl-note">KEMAS is new, so your browser may say it "isn't commonly downloaded". Choose <b>Keep</b>, then on the blue Windows screen choose <b>More info → Run anyway</b>. Every release is published with a SHA-256 checksum on GitHub.</p>
+        <p class="dl-note">Installer or portable, both are free. Microsoft Store version coming soon. <a href="https://github.com/AmzSyafxProject/KEMAS">GitHub</a> · <a href="https://tally.so/r/4aXGXo" target="_blank" rel="noopener">Report an issue</a></p>
+        <div class="beta-card" id="beta">
+          <div class="beta-head"><h3>Public Beta Test</h3><span class="when">Official release · <b>25 Oct 2026</b></span></div>
+          <div class="cd" id="cd" role="timer" aria-live="off"><div><b data-u="d">--</b><span>Days</span></div><div><b data-u="h">--</b><span>Hrs</span></div><div><b data-u="m">--</b><span>Min</span></div><div><b data-u="s">--</b><span>Sec</span></div></div>
+          <p class="beta-thanks">Congratulations and thank you to every beta tester who has downloaded KEMAS.</p>
+        </div>
+        <ul class="facts">
+          <li>Smart Clean and Deep Clean for junk, caches and leftovers</li>
+          <li>Road to 100: a guided path to a perfect health score</li>
+          <li>File Organizer, Memory Booster and Startup Apps</li>
+          <li>Updates itself, safely, with a verified SHA-256 checksum</li>
+        </ul>
+        <p class="dl-note dl-warn">New app, so your browser may warn about it. Choose <b>Keep</b>, then <b>More info → Run anyway</b>.</p>
       </div>
       <div class="frame reveal" id="frame">
         <div class="card"><img src="https://github.com/user-attachments/assets/13a81fdb-49ff-42f9-8d82-7a4b3f74090e" alt="KEMAS app showing a health score of 92 and a Smart Clean button" width="2400" height="1350" loading="lazy"></div>
