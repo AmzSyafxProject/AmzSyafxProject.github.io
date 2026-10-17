@@ -653,7 +653,7 @@
         const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(envScene, .02).texture; pm.dispose();
       } catch (e) {}
       const mkJet = (col, glow) => {
-        const g = new THREE.Group(), mat = new THREE.MeshStandardMaterial({ color: col, metalness: .78, roughness: .3, envMapIntensity: 1.15 });
+        const g = new THREE.Group(), mat = new THREE.MeshStandardMaterial({ color: col, metalness: .6, roughness: .38, envMapIntensity: 1.0 });
         const dark = new THREE.MeshStandardMaterial({ color: 0x07090f, metalness: .4, roughness: .6 });
         const prof = [[.0, 3.9], [.09, 3.6], [.22, 3.0], [.36, 2.3], [.5, 1.5], [.6, .6], [.64, -.4], [.62, -1.4], [.55, -2.4], [.46, -3.0], [.4, -3.1]].map(([r, z]) => new THREE.Vector2(r, z));
         const fusG = new THREE.LatheGeometry(prof, 36); fusG.rotateX(Math.PI / 2); fusG.scale(1.18, .68, 1);
@@ -664,12 +664,21 @@
           const wg = ext(poly([[.45, -1.4], [3.35, 1.7], [3.35, 2.4], [.55, 2.6]].map(([x, y]) => [sx * x, y])), .07, .03); wg.rotateX(-Math.PI / 2);
           const w = new THREE.Mesh(wg, mat); w.position.y = -.12; g.add(w);
           const tg = ext(poly([[.5, 1.9], [2.0, 3.0], [2.0, 3.5], [.55, 3.3]].map(([x, y]) => [sx * x, y])), .06, .02); tg.rotateX(-Math.PI / 2);
-          const tp = new THREE.Mesh(tg, mat); tp.position.y = -.1; tp.position.z = -6.2; g.add(tp);
+          const tp = new THREE.Mesh(tg, mat); tp.position.y = -.1; g.add(tp);
           const fg = ext(poly([[1.7, .35], [3.0, 2.0], [3.45, 2.0], [3.1, .35]]), .05, .02); fg.rotateY(Math.PI / 2);
-          const fin = new THREE.Mesh(fg, mat); fin.position.set(sx * .55, .25, -3.4); fin.rotation.z = -sx * .34; g.add(fin);
+          const fin = new THREE.Mesh(fg, mat); fin.position.set(sx * .55, .25, 0); fin.rotation.z = -sx * .34; g.add(fin);
           const intake = new THREE.Mesh(new THREE.SphereGeometry(.34, 14, 10), dark); intake.scale.set(.9, .7, 1.7); intake.position.set(sx * .62, -.2, 1.0); g.add(intake);
           const nz = new THREE.Mesh(new THREE.CylinderGeometry(.27, .33, .5, 18, 1, true), new THREE.MeshStandardMaterial({ color: 0x1b202c, metalness: .9, roughness: .35, side: THREE.DoubleSide })); nz.rotation.x = Math.PI / 2; nz.position.set(sx * .34, 0, -3.15); g.add(nz);
           const nl = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: sx > 0 ? 0xff3344 : 0x33ff88, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false })); nl.scale.setScalar(.7); nl.position.set(sx * 3.4, -.05, 2.2); g.add(nl);
+        }
+        const chg = ext(poly([[0, 3.2], [1.15, .9], [1.0, -1.2], [0, -.6]]), .04, .02); chg.rotateX(-Math.PI / 2);
+        const chine = new THREE.Mesh(chg, mat); chine.position.set(0, -.1, 0); chine.scale.set(1, 1, 1); g.add(chine);
+        const chg2 = chine.clone(); chg2.scale.x = -1; g.add(chg2);
+        const spine = new THREE.Mesh(new THREE.CylinderGeometry(.2, .3, 3.2, 12), mat); spine.rotation.x = Math.PI / 2; spine.scale.set(1, 1, .8); spine.position.set(0, .34, -1.3); g.add(spine);
+        const pitot = new THREE.Mesh(new THREE.CylinderGeometry(.015, .03, .9, 6), dark); pitot.rotation.x = Math.PI / 2; pitot.position.z = 4.2; g.add(pitot);
+        for (const sx of [1, -1]) for (const wx of [1.5, 2.6]) {
+          const ms = new THREE.Mesh(new THREE.CylinderGeometry(.07, .07, 1.7, 8), new THREE.MeshStandardMaterial({ color: 0xb8bcc6, metalness: .4, roughness: .5 })); ms.rotation.x = Math.PI / 2; ms.position.set(sx * wx, -.3, wx > 2 ? -.2 : .3); g.add(ms);
+          const mt = new THREE.Mesh(new THREE.ConeGeometry(.07, .3, 8), dark); mt.rotation.x = Math.PI / 2; mt.position.set(sx * wx, -.3, (wx > 2 ? -.2 : .3) + .98); g.add(mt);
         }
         const can = new THREE.Mesh(new THREE.SphereGeometry(.4, 20, 14), new THREE.MeshStandardMaterial({ color: 0x0b1424, metalness: 1, roughness: .04, envMapIntensity: 1.6 })); can.scale.set(.78, .62, 2.2); can.position.set(0, .33, 1.35); g.add(can);
         const flame = new THREE.Group(); flame.position.z = -3.4;
@@ -681,7 +690,7 @@
         const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: glow, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: .9 })); halo.scale.setScalar(3.4); halo.position.z = -3.6; g.add(halo);
         g.userData = { flame, halo }; g.visible = false; scene.add(g); return g;
       };
-      const jetA = mkJet(0x5a6b88, 0xff9a4a), jetB = mkJet(0x232a38, 0xff5a3a);
+      const jetA = mkJet(0x8a909c, 0xff9a4a), jetB = mkJet(0x30343e, 0xff5a3a);
       const jP = new THREE.Vector3(), jQ = new THREE.Vector3(), jUp = new THREE.Vector3(0, 1, 0);
       const poseJet = (jet, pos, look, roll, t) => {
         jet.position.copy(pos); jet.lookAt(look); jet.rotateZ(roll); jet.visible = true; jet.scale.setScalar(t > 3.3 ? 2.4 : 1);
