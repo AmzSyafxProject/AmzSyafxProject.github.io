@@ -142,6 +142,17 @@
   .facts li { display: flex; gap: 14px; align-items: baseline; color: var(--star); }
   .facts li::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 2px; transform: rotate(45deg) translateY(-2px); background: linear-gradient(135deg, var(--violet), var(--aqua)); }
   .feature .actions { opacity: 1; animation: none; }
+
+  .beta-card { margin-top: 28px; max-width: 520px; padding: 22px 24px; border-radius: 20px; border: 1px solid rgba(123,92,255,.35); background: linear-gradient(160deg, rgba(123,92,255,.14), rgba(34,211,245,.06)); }
+  .beta-card h3 { font-family: var(--display); font-weight: 700; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--aqua); }
+  .beta-card .when { margin-top: 6px; color: var(--star); font-size: 15px; }
+  .cd { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px; }
+  .cd div { text-align: center; padding: 12px 4px; border-radius: 14px; background: rgba(3,4,15,.55); border: 1px solid var(--line); }
+  .cd b { display: block; font-family: var(--display); font-weight: 800; font-size: clamp(24px, 3.4vw, 34px); line-height: 1; font-variant-numeric: tabular-nums; }
+  .cd span { display: block; margin-top: 6px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+  .beta-thanks { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--mist); font-size: 14.5px; line-height: 1.6; }
+  .beta-thanks b { color: var(--star); font-weight: 600; }
+  .beta-done .cd { display: none; }
   .dl-note { margin-top: 16px; max-width: 470px; font-size: 13.5px; line-height: 1.55; color: var(--star); opacity: .62; }
   .dl-note b { font-weight: 600; opacity: 1; }
   .frame { position: relative; perspective: 1400px; }
@@ -655,7 +666,7 @@
 <main>
   <section class="hero" aria-label="Introduction">
     <div>
-      <div class="hero-chip"><i></i><b>KEMAS 3.1</b> is live · <b>RumahSync</b> coming soon</div>
+      <div class="hero-chip"><i></i><b>KEMAS</b> is in Beta Test · Official release <b>25 Oct 2026</b></div>
       <h1 id="headline"><span class="w"><span>One</span></span> <span class="w"><span>universe</span></span> <span class="w"><span>for</span></span> <span class="w"><span>everything</span></span> <span class="w"><span class="grad">I&nbsp;build.</span></span></h1>
       <p class="lede">AMZProject Unity is home to the apps, tools and experiences created by Amzar Syafiq. Some are live today. The rest are still forming.</p>
       <div class="actions">
@@ -671,12 +682,12 @@
     <div class="scroll-cue" aria-hidden="true"></div>
   </section>
 
-  <div class="boom-band" aria-hidden="true"><div class="track"><span>KEMAS</span><em>✦</em><span class="o">LIVE NOW</span><em>✦</em><span>RUMAHSYNC</span><em>✦</em><span class="o">COMING SOON</span><em>✦</em><span>MORE WORLDS FORMING</span><em>✦</em><span class="o">AMZPROJECT UNITY</span><em>✦</em><span>KEMAS</span><em>✦</em><span class="o">LIVE NOW</span><em>✦</em><span>RUMAHSYNC</span><em>✦</em><span class="o">COMING SOON</span><em>✦</em><span>MORE WORLDS FORMING</span><em>✦</em><span class="o">AMZPROJECT UNITY</span><em>✦</em></div></div>
+  <div class="boom-band" aria-hidden="true"><div class="track"><span>KEMAS</span><em>✦</em><span class="o">BETA TEST</span><em>✦</em><span>RUMAHSYNC</span><em>✦</em><span class="o">COMING SOON</span><em>✦</em><span>MORE WORLDS FORMING</span><em>✦</em><span class="o">AMZPROJECT UNITY</span><em>✦</em><span>KEMAS</span><em>✦</em><span class="o">LIVE NOW</span><em>✦</em><span>RUMAHSYNC</span><em>✦</em><span class="o">COMING SOON</span><em>✦</em><span>MORE WORLDS FORMING</span><em>✦</em><span class="o">AMZPROJECT UNITY</span><em>✦</em></div></div>
 
   <section id="kemas" aria-labelledby="kemas-h">
     <div class="feature" data-no="01">
       <div class="reveal">
-        <div class="status"><i></i>Project 001 · Live now · Version 3.2.2</div>
+        <div class="status"><i></i>Project 001 · Beta Test · Version 3.2.2</div>
         <h2 class="kemas-title" id="kemas-h">
           <svg viewBox="0 0 512 512" aria-hidden="true"><defs><linearGradient id="kg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B5CFF"/><stop offset=".55" stop-color="#5A7BFF"/><stop offset="1" stop-color="#22D3F5"/></linearGradient></defs>
             <rect x="16" y="16" width="480" height="480" rx="124" fill="url(#kg)"/><rect x="150" y="132" width="60" height="248" rx="30" fill="#fff"/>
@@ -687,6 +698,12 @@
         </h2>
         <div class="kemas-tag">Your PC, Kemas.</div>
         <p class="body">A native Windows app that clears junk, sorts your folders and frees memory in one click — with safeguards that never touch what matters.</p>
+        <div class="beta-card" id="beta">
+          <h3>Public Beta Test</h3>
+          <p class="when">Official public release: <b>Sunday, 25 October 2026</b> (Malaysia time)</p>
+          <div class="cd" id="cd" role="timer" aria-live="off"><div><b data-u="d">--</b><span>Days</span></div><div><b data-u="h">--</b><span>Hours</span></div><div><b data-u="m">--</b><span>Minutes</span></div><div><b data-u="s">--</b><span>Seconds</span></div></div>
+          <p class="beta-thanks"><b>Congratulations and thank you</b> to every beta tester who has downloaded KEMAS. Your time, feedback and trust are shaping the official release. Found something? <a href="https://tally.so/r/4aXGXo" target="_blank" rel="noopener">Report an issue or share an idea</a>.</p>
+        </div>
         <ul class="facts">
           <li>Smart Clean for temp files, caches and the Recycle Bin</li>
           <li>Deep Clean for shader and app caches, crash dumps and Windows leftovers</li>
@@ -942,7 +959,7 @@
   function sizeOrbit() { const r = oc.getBoundingClientRect(); OS = r.width; oc.width = OS * dpr; oc.height = OS * dpr; ox.setTransform(dpr, 0, 0, dpr, 0, 0); }
   sizeOrbit();
   const bodies = [
-    { name: 'KEMAS', note: 'Live now', r: .23, speed: .22, size: 15, c1: '#7B5CFF', c2: '#2FD4FF', live: true, a: .4 },
+    { name: 'KEMAS', note: 'Beta Test', r: .23, speed: .22, size: 15, c1: '#7B5CFF', c2: '#2FD4FF', live: true, a: .4 },
     { name: 'RumahSync', note: 'Project 002 · Coming soon', r: .32, speed: -.15, size: 11, c1: '#FFC36B', c2: '#FF5C7A', a: 2.2 },
     { name: 'Project in design', note: 'Designing', r: .40, speed: .11, size: 9, c1: '#9CF5FF', c2: '#2F8CFF', a: 4.1 },
     { name: 'Early concept', note: 'Concept', r: .465, speed: -.08, size: 7, c1: '#D7C9FF', c2: '#7B5CFF', a: 1.0 },
@@ -1020,6 +1037,21 @@
   if (reduce) { drawSky(0); drawOrbit(0); glow.style.opacity = 0; }
   else requestAnimationFrame(frameLoop);
   document.fonts && document.fonts.ready.then(() => { if (reduce) drawOrbit(0); });
+})();
+
+(() => {
+  const card = document.getElementById('beta'); if (!card) return;
+  const target = Date.parse('2026-10-25T00:00:00+08:00');
+  const el = {}; card.querySelectorAll('[data-u]').forEach(n => el[n.dataset.u] = n);
+  const pad = n => String(n).padStart(2, '0');
+  const tick = () => {
+    const ms = target - Date.now();
+    if (ms <= 0) { card.classList.add('beta-done'); card.querySelector('h3').textContent = 'Officially released'; card.querySelector('.when').textContent = 'KEMAS is now officially available to everyone. Thank you, beta testers!'; return false; }
+    const t = Math.floor(ms / 1000);
+    el.d.textContent = Math.floor(t / 86400); el.h.textContent = pad(Math.floor(t % 86400 / 3600)); el.m.textContent = pad(Math.floor(t % 3600 / 60)); el.s.textContent = pad(t % 60);
+    return true;
+  };
+  if (tick()) { const id = setInterval(() => { if (!tick()) clearInterval(id); }, 1000); }
 })();
 </script>
 </body>
