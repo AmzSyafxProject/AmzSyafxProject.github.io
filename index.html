@@ -389,19 +389,24 @@
   const libReady = new Promise((res, rej) => { lib.onload = res; lib.onerror = rej; });
   libReady.catch(() => {});
   document.head.appendChild(lib);
+  /* start the clip immediately: mobile browsers ignore preload and only buffer once play() is called */
+  video.playbackRate = 2.4;
   const videoReady = new Promise(res => {
     if (!video.isConnected) return res(false);
-    if (video.readyState >= 3) return res(true);
-    video.addEventListener('canplay', () => res(true), { once: true });
+    const ok = () => res(true);
+    video.addEventListener('playing', ok, { once: true });
     video.addEventListener('error', () => res(false), { once: true });
-    setTimeout(() => res(video.readyState >= 3), 3000);
+    const seek = () => { try { if (video.currentTime < .5) video.currentTime = .6; } catch (e) {} };
+    if (video.readyState >= 1) seek(); else video.addEventListener('loadedmetadata', seek, { once: true });
+    const p = video.play(); if (p && p.catch) p.catch(() => res(false));
+    setTimeout(() => res(!video.paused && video.readyState >= 3), 7000);
   });
-  const giveUp = setTimeout(() => { if (state === 'load') finish(true); }, 7000);
+  const giveUp = setTimeout(() => { if (state === 'load') finish(true); }, 11000);
 
   (async () => {
     let hasVideo = await videoReady;
     if (state !== 'load') return;
-    if (hasVideo) { try { video.currentTime = .6; video.playbackRate = 2.4; await video.play(); } catch (e) { hasVideo = false; } }
+    if (hasVideo) { try { video.pause(); video.currentTime = .6; video.playbackRate = 2.4; await video.play(); } catch (e) { hasVideo = false; } }
     if (!hasVideo) {
       if (video.isConnected) dropVideo();
       try { await libReady; } catch (e) { clearTimeout(giveUp); finish(true); return; }
