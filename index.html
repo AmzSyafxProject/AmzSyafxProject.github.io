@@ -143,6 +143,11 @@
   .facts li::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 2px; transform: rotate(45deg) translateY(-2px); background: linear-gradient(135deg, var(--violet), var(--aqua)); }
   .feature .actions { opacity: 1; animation: none; }
 
+  .beta-pill { display: inline-flex; align-items: center; gap: 8px; margin-left: 10px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid rgba(123,92,255,.45); background: rgba(123,92,255,.14); text-decoration: none; color: var(--star); font-size: 13px; white-space: nowrap; }
+  .beta-pill .bp-tag { padding: 3px 9px; border-radius: 999px; background: var(--aqua); color: #06122b; font-weight: 700; letter-spacing: .08em; font-size: 11px; }
+  .beta-pill .bp-time { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .beta-pill:hover { background: rgba(123,92,255,.26); }
+  @media (max-width: 560px) { .beta-pill { margin-left: 0; font-size: 12px; } }
   .beta-card { margin-top: 28px; max-width: 520px; padding: 22px 24px; border-radius: 20px; border: 1px solid rgba(123,92,255,.35); background: linear-gradient(160deg, rgba(123,92,255,.14), rgba(34,211,245,.06)); }
   .beta-card h3 { font-family: var(--display); font-weight: 700; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--aqua); }
   .beta-card .when { margin-top: 6px; color: var(--star); font-size: 15px; }
@@ -661,6 +666,7 @@
   <nav aria-label="Main">
     <a href="#kemas">KEMAS</a><a href="#rumahsync">RumahSync</a><a href="#forming">Upcoming</a><a href="#creed">Approach</a><a class="keep" href="https://github.com/AmzSyafxProject">GitHub</a>
   </nav>
+  <a class="beta-pill" id="betaPill" href="#beta" title="KEMAS public release: 25 Oct 2026"><span class="bp-tag">BETA</span><span class="bp-time" id="bpTime">--</span></a>
 </header>
 
 <main>
@@ -1039,6 +1045,15 @@
   if (reduce) { drawSky(0); drawOrbit(0); glow.style.opacity = 0; }
   else requestAnimationFrame(frameLoop);
   document.fonts && document.fonts.ready.then(() => { if (reduce) drawOrbit(0); });
+})();
+
+(() => {
+  const pill = document.getElementById('bpTime'), tg = Date.parse('2026-10-25T00:00:00+08:00');
+  if (!pill) return;
+  const f = () => { const ms = tg - Date.now(); if (ms <= 0) { pill.textContent = 'Released'; return false; }
+    const t = Math.floor(ms / 1000), z = n => String(n).padStart(2, '0');
+    pill.textContent = Math.floor(t / 86400) + 'd ' + z(Math.floor(t % 86400 / 3600)) + ':' + z(Math.floor(t % 3600 / 60)) + ':' + z(t % 60); return true; };
+  if (f()) { const id = setInterval(() => { if (!f()) clearInterval(id); }, 1000); }
 })();
 
 (() => {
