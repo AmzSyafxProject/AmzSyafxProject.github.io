@@ -334,7 +334,7 @@
   /* device budget: lighter scene on small or low-power devices, no clip on data saver or slow networks */
   const conn = navigator.connection || {};
   const slowNet = !!conn.saveData || /(^|-)2g|3g/.test(conn.effectiveType || '');
-  const lite = (navigator.hardwareConcurrency || 8) <= 2 || (navigator.deviceMemory || 8) <= 2 || matchMedia('(max-width: 480px)').matches;
+  const lite = (navigator.hardwareConcurrency || 8) <= 2 || (navigator.deviceMemory || 8) <= 2;   // only genuinely weak devices; phones and laptops get full quality
 
   const soundBtn = intro.querySelector('.i-sound'), soundLabel = soundBtn.querySelector('span'), skipBtn = intro.querySelector('.i-skip'), flashEl = intro.querySelector('.i-flash');
   const video = intro.querySelector('.i-video');
@@ -516,7 +516,7 @@
 
       const canvas = document.createElement('canvas'); intro.prepend(canvas);
       renderer = new THREE.WebGLRenderer({ canvas, antialias: !lite, powerPreference: 'high-performance' });
-      renderer.setPixelRatio(lite ? 1 : Math.min(Math.max(window.devicePixelRatio || 1, 1.5), 2));
+      renderer.setPixelRatio(lite ? 1 : Math.min(Math.max(window.devicePixelRatio || 1, 2), 2.5));   // always supersample so the 3D logo edges stay smooth
       renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
       const scene = new THREE.Scene(); scene.background = new THREE.Color(0x03040f);
       const camera = new THREE.PerspectiveCamera(40, 1, .1, 400);
@@ -546,22 +546,22 @@
       const rocket = new THREE.Group(); logo.add(rocket);
       const P = (x, y) => [(x - 100) / 20, -(y - 100) / 20];
       const shape = new THREE.Shape(); [[100, 28], [164, 172], [134, 172], [100, 94], [66, 172], [36, 172]].forEach((pt, i) => { const [x, y] = P(...pt); i ? shape.lineTo(x, y) : shape.moveTo(x, y); }); shape.closePath();
-      const aGeo = new THREE.ExtrudeGeometry(shape, { depth: .8, bevelEnabled: true, bevelThickness: .14, bevelSize: .09, bevelSegments: lite ? 2 : 4 }); aGeo.translate(0, 0, -.4);
+      const aGeo = new THREE.ExtrudeGeometry(shape, { depth: .8, bevelEnabled: true, bevelThickness: .14, bevelSize: .09, bevelSegments: lite ? 3 : 8, curveSegments: lite ? 16 : 64 }); aGeo.translate(0, 0, -.4);
       rocket.add(new THREE.Mesh(aGeo, new THREE.MeshStandardMaterial({ color: 0xf2f4ff, metalness: .55, roughness: .22 })));
 
       const ringRoll = new THREE.Group(); ringRoll.position.y = -.8; ringRoll.rotation.z = 16 * Math.PI / 180; logo.add(ringRoll);
       const ringTilt = new THREE.Group(); ringTilt.rotation.x = -72 * Math.PI / 180; ringRoll.add(ringTilt);
       const ringSpin = new THREE.Group(); ringTilt.add(ringSpin);
-      ringSpin.add(new THREE.Mesh(new THREE.TorusGeometry(4.2, .2, lite ? 12 : 24, lite ? 120 : 220), new THREE.MeshStandardMaterial({ color: 0x8e7bff, emissive: 0x3a24c0, emissiveIntensity: .55, metalness: .5, roughness: .3 })));
+      ringSpin.add(new THREE.Mesh(new THREE.TorusGeometry(4.2, .2, lite ? 16 : 48, lite ? 160 : 360), new THREE.MeshStandardMaterial({ color: 0x8e7bff, emissive: 0x3a24c0, emissiveIntensity: .55, metalness: .5, roughness: .3 })));
       ringRoll.visible = false;
 
       const glowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'); const g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
         g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.3, 'rgba(255,255,255,.45)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
-      const sat = new THREE.Mesh(new THREE.SphereGeometry(.42, 24, 16), new THREE.MeshBasicMaterial({ color: 0x6fe6ff })); ringTilt.add(sat);
+      const sat = new THREE.Mesh(new THREE.SphereGeometry(.42, 48, 32), new THREE.MeshBasicMaterial({ color: 0x6fe6ff })); ringTilt.add(sat);
       const satHalo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0x22c3ee, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false })); satHalo.scale.setScalar(3); sat.add(satHalo);
       sat.add(new THREE.PointLight(0x22c3ee, 2.2, 12));
 
-      const shock = new THREE.Mesh(new THREE.TorusGeometry(4.2, .07, 6, 160), new THREE.MeshBasicMaterial({ color: 0x9ff0ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+      const shock = new THREE.Mesh(new THREE.TorusGeometry(4.2, .07, 10, 320), new THREE.MeshBasicMaterial({ color: 0x9ff0ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
       shock.visible = false; scene.add(shock);
 
       /* particles: thruster fire + explosion sparks */
