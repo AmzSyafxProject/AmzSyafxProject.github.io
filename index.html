@@ -537,7 +537,7 @@
       size(); addEventListener('resize', size);
 
       scene.add(new THREE.AmbientLight(0x5a6aa0, .32));
-      const key = new THREE.DirectionalLight(0xdfe8ff, 1.35); key.position.set(-6, 8, 10); scene.add(key);
+      const key = new THREE.DirectionalLight(0xdfe8ff, .9); key.position.set(-6, 8, 10); scene.add(key);
       const rim = new THREE.DirectionalLight(0x7b5cff, 2); rim.position.set(6, -4, -8); scene.add(rim);
       const fireLight = new THREE.PointLight(0xff8a3a, 0, 18); scene.add(fireLight);
 
@@ -547,7 +547,10 @@
       const P = (x, y) => [(x - 100) / 20, -(y - 100) / 20];
       const shape = new THREE.Shape(); [[100, 28], [164, 172], [134, 172], [100, 94], [66, 172], [36, 172]].forEach((pt, i) => { const [x, y] = P(...pt); i ? shape.lineTo(x, y) : shape.moveTo(x, y); }); shape.closePath();
       const aGeo = new THREE.ExtrudeGeometry(shape, { depth: .8, bevelEnabled: true, bevelThickness: .14, bevelSize: .09, bevelSegments: lite ? 3 : 8, curveSegments: lite ? 16 : 64 }); aGeo.translate(0, 0, -.4);
-      rocket.add(new THREE.Mesh(aGeo, new THREE.MeshStandardMaterial({ color: 0xf2f4ff, metalness: .55, roughness: .22 })));
+      { const pp = aGeo.attributes.position, cc = [], c1 = new THREE.Color(0x7B5CFF), c2 = new THREE.Color(0x5A7BFF), c3 = new THREE.Color(0x22D3F5), tc = new THREE.Color();   // original brand gradient violet -> blue -> cyan
+          for (let i = 0; i < pp.count; i++) { const k = Math.min(1, Math.max(0, ((pp.getX(i) + 3.4) / 6.8 + (1 - (pp.getY(i) + 3.6) / 7.2)) / 2)); k < .55 ? tc.copy(c1).lerp(c2, k / .55) : tc.copy(c2).lerp(c3, (k - .55) / .45); tc.convertSRGBToLinear(); cc.push(tc.r, tc.g, tc.b); }
+          aGeo.setAttribute('color', new THREE.Float32BufferAttribute(cc, 3)); }
+      rocket.add(new THREE.Mesh(aGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, emissive: 0x000000, metalness: .12, roughness: .42, envMapIntensity: .3 })));
 
       const ringRoll = new THREE.Group(); ringRoll.position.y = -.8; ringRoll.rotation.z = 16 * Math.PI / 180; logo.add(ringRoll);
       const ringTilt = new THREE.Group(); ringTilt.rotation.x = -72 * Math.PI / 180; ringRoll.add(ringTilt);
@@ -634,7 +637,7 @@
       const moon = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0x7f9bd8, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: .5 })); moon.scale.setScalar(170); moon.position.set(-34, 18, -150); scene.add(moon);
       const moon2 = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xdfe8ff, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: .5 })); moon2.scale.setScalar(30); moon2.position.set(-34, 18, -149); scene.add(moon2);
       // orbiting colour lights give the metal logo rainbow reflections
-      const cLight1 = new THREE.PointLight(0x4a7bff, 1.8, 34), cLight2 = new THREE.PointLight(0x22d3f5, 1.8, 34), cLight3 = new THREE.PointLight(0x6a3cff, 1.2, 30);
+      const cLight1 = new THREE.PointLight(0x4a7bff, .5, 34), cLight2 = new THREE.PointLight(0x22d3f5, .5, 34), cLight3 = new THREE.PointLight(0x6a3cff, .4, 30);
       scene.add(cLight1, cLight2, cLight3);
       const ringMat = ringSpin.children[0].material;
       // blast flare
@@ -747,11 +750,11 @@
         muzzle.position.copy(missileStart); muzzle.material.opacity = Math.max(0, mf); muzzle.scale.setScalar(6 + 12 * (1 - mf));
       };
       const streakTex = (() => { const c = document.createElement('canvas'); c.width = 512; c.height = 32; const x = c.getContext('2d'); const g = x.createLinearGradient(0, 0, 512, 0);
-        g.addColorStop(0, 'rgba(80,140,255,0)'); g.addColorStop(.35, 'rgba(120,180,255,.55)'); g.addColorStop(.5, 'rgba(255,255,255,1)'); g.addColorStop(.65, 'rgba(120,180,255,.55)'); g.addColorStop(1, 'rgba(80,140,255,0)'); x.fillStyle = g; x.fillRect(0, 12, 512, 8);
+        g.addColorStop(0, 'rgba(80,140,255,0)'); g.addColorStop(.35, 'rgba(123,92,255,.7)'); g.addColorStop(.5, 'rgba(255,255,255,1)'); g.addColorStop(.65, 'rgba(34,211,245,.7)'); g.addColorStop(1, 'rgba(80,140,255,0)'); x.fillStyle = g; x.fillRect(0, 12, 512, 8);
         const v = x.createRadialGradient(256, 16, 0, 256, 16, 256); v.addColorStop(0, 'rgba(255,255,255,.9)'); v.addColorStop(1, 'rgba(255,255,255,0)'); x.globalCompositeOperation = 'destination-in'; x.fillStyle = v; x.fillRect(0, 0, 512, 32); return new THREE.CanvasTexture(c); })();
       const lens = new THREE.Sprite(new THREE.SpriteMaterial({ map: streakTex, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0 })); lens.scale.set(10, 1, 1); scene.add(lens);
       const WN = lite ? 450 : 1100, wA = new Float32Array(WN), wR = new Float32Array(WN), wZ = new Float32Array(WN), wP = new Float32Array(WN * 6), wC = new Float32Array(WN * 6);
-      for (let i = 0; i < WN; i++) { wA[i] = Math.random() * 6.283; wR[i] = 2.5 + Math.pow(Math.random(), 1.4) * 70; wZ[i] = -260 + Math.random() * 280; const c = Math.random(), r = c < .6 ? .55 : c < .85 ? .85 : .7, gg = c < .6 ? .75 : c < .85 ? .92 : .55; wC.set([r, gg, 1, r * .1, gg * .1, .15], i * 6); }
+      for (let i = 0; i < WN; i++) { wA[i] = Math.random() * 6.283; wR[i] = 2.5 + Math.pow(Math.random(), 1.4) * 70; wZ[i] = -260 + Math.random() * 280; const pal = [[.48,.36,1],[.35,.48,1],[.13,.83,.96],[1,.35,.75],[1,.7,.3]][i % 5]; wC.set([pal[0], pal[1], pal[2], pal[0] * .1, pal[1] * .1, pal[2] * .15], i * 6); }
       const wGeo = new THREE.BufferGeometry(); wGeo.setAttribute('position', new THREE.BufferAttribute(wP, 3)); wGeo.setAttribute('color', new THREE.BufferAttribute(wC, 3));
       const warp = new THREE.LineSegments(wGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: .9, blending: THREE.AdditiveBlending, depthWrite: false })); warp.frustumCulled = false; warp.visible = false; scene.add(warp);
       const epicUpdate = (t, dt) => {
