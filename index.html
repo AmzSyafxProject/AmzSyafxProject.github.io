@@ -497,7 +497,7 @@
 
       const canvas = document.createElement('canvas'); intro.prepend(canvas);
       renderer = new THREE.WebGLRenderer({ canvas, antialias: !lite, powerPreference: 'high-performance' });
-      renderer.setPixelRatio(lite ? 1 : Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setPixelRatio(lite ? 1 : Math.min(Math.max(window.devicePixelRatio || 1, 1.5), 2));
       renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
       const scene = new THREE.Scene(); scene.background = new THREE.Color(0x03040f);
       const camera = new THREE.PerspectiveCamera(40, 1, .1, 400);
@@ -962,8 +962,11 @@
   // orbit system
   const oc = document.getElementById('orbit'), ox = oc.getContext('2d'), tip = document.getElementById('tip');
   let OS = 600;
-  function sizeOrbit() { const r = oc.getBoundingClientRect(); OS = r.width; oc.width = OS * dpr; oc.height = OS * dpr; ox.setTransform(dpr, 0, 0, dpr, 0, 0); }
+  // layout size (offsetWidth) ignores the pop-in scale animation, which made the canvas render at ~60% and look soft; supersample at 2x-3x for crisp lines
+  const odpr = Math.min(Math.max(window.devicePixelRatio || 1, 2), 3);
+  function sizeOrbit() { OS = oc.offsetWidth || 600; oc.width = Math.round(OS * odpr); oc.height = Math.round(OS * odpr); ox.setTransform(odpr, 0, 0, odpr, 0, 0); ox.imageSmoothingQuality = 'high'; }
   sizeOrbit();
+  if (window.ResizeObserver) new ResizeObserver(sizeOrbit).observe(oc);
   const bodies = [
     { name: 'KEMAS', note: 'Beta Test', r: .23, speed: .22, size: 15, c1: '#7B5CFF', c2: '#2FD4FF', live: true, a: .4 },
     { name: 'RumahSync', note: 'Project 002 · Coming soon', r: .32, speed: -.15, size: 11, c1: '#FFC36B', c2: '#FF5C7A', a: 2.2 },
