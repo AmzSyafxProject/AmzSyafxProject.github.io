@@ -701,11 +701,13 @@
         const o = who === 'A' ? 0 : 1;
         if (t < 1.7) { const u = t / 1.7; return new THREE.Vector3(lerp(54, -54, u) + o * 13, 3 + Math.sin(u * 5 + o) * 2.5 - o * 1.2, -10 - o * 3); }
         if (t < 3.3) { const a = (t - 1.7) * 1.05 - o * .42; return new THREE.Vector3(Math.cos(a) * 30, Math.sin(a * 1.9) * 7 + 1, Math.sin(a) * 26 - 46); }
+        if (t > T_IGN) { const v = t - T_IGN, sg = o ? 1 : -1;   // after the launch the jets keep flying and peel off out of frame
+          return new THREE.Vector3(9 - o * 5 + sg * -1 * v * v * 14 + (o ? 6 : 9) * v * (o ? 1 : 1), 6 + o * 1.5 + v * (o ? -2 : 3), -50 - o * 17 + 38 * v); }
         const u = clamp((t - 3.3) / (T_IGN - 3.3)); return new THREE.Vector3(lerp(26, 9, ease(u)) - o * 5, lerp(9, 6, u) + o * 1.5, lerp(-175, -50, ease(u)) - o * 17);
       };
       const missileStart = new THREE.Vector3(9, 6, -50);
       const jetStep = (t, dt) => {
-        const pre = t < T_IGN + 1.2;
+        const pre = t < T_IGN + 2.2;
         jetA.visible = jetB.visible = pre;
         clouds.forEach(c => { const sp = t < 1.7 ? 60 : t < 3.3 ? 38 : 14; c.position.x -= sp * dt; if (c.position.x < -100) { c.position.x += 200; c.position.y = (Math.random() - .5) * 40; } });
         if (!pre) return;
