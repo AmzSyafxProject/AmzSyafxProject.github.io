@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login · Amzar's Vault</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="login">
+  <main class="login-wrap">
+    <form id="login-form" class="card login-card" novalidate>
+      <h1>Welcome back</h1>
+      <p class="muted">Sign in to open your dashboard.</p>
+
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" autocomplete="username" required>
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+
+      <!-- Filled by app.js when login fails -->
+      <p id="login-error" class="error" role="alert" hidden></p>
+
+      <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

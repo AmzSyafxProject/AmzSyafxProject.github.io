@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard · Amzar's Vault</title>
+  <script>
+    // Early guard: leave before the page renders if not logged in.
+    try {
+      if (sessionStorage.getItem('hx_auth') !== '1') location.replace('index.html');
+    } catch (e) {
+      location.replace('index.html');
+    }
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="dashboard">
+  <header class="topbar">
+    <span class="brand">Amzar's Vault</span>
+    <button id="logout-btn" class="btn btn-ghost">Logout</button>
+  </header>
+
+  <main class="container">
+    <!-- ========== 1. Guide ========== -->
+    <section class="card" aria-labelledby="guide-title">
+      <h2 id="guide-title">How to use Headroom</h2>
+      <ol class="steps">
+        <li>Open <strong>PowerShell</strong>.</li>
+        <li>
+          Run the main command:
+          <div class="code-row code-main">
+            <code>headroom wrap claude</code>
+            <button class="btn btn-small copy-btn" data-copy="headroom wrap claude">Copy</button>
+          </div>
+        </li>
+        <li>Use Claude Code as usual.</li>
+        <li>Check savings: <code class="inline">headroom perf</code></li>
+        <li>Visual view: <code class="inline">headroom dashboard</code></li>
+      </ol>
+      <p class="reminder">
+        <strong>Don't forget: always start with <code class="inline">headroom wrap claude</code>, not plain <code class="inline">claude</code>.</strong>
+      </p>
+    </section>
+
+    <!-- ========== 2. Code Vault ========== -->
+    <section class="card" aria-labelledby="vault-title">
+      <div class="section-head">
+        <h2 id="vault-title">Code Vault</h2>
+        <div class="actions">
+          <button id="export-btn" class="btn btn-ghost btn-small">Export JSON</button>
+          <label class="btn btn-ghost btn-small" for="import-file">Import JSON</label>
+          <input id="import-file" type="file" accept="application/json,.json" hidden>
+        </div>
+      </div>
+
+      <!-- Add / edit form. A filled hidden id means "editing". -->
+      <form id="snippet-form" class="snippet-form">
+        <input type="hidden" id="snippet-id">
+        <div class="form-row">
+          <div>
+            <label for="snippet-title">Title</label>
+            <input id="snippet-title" type="text" required maxlength="120">
+          </div>
+          <div>
+            <label for="snippet-label">Language / label</label>
+            <input id="snippet-label" type="text" maxlength="40" placeholder="e.g. powershell">
+          </div>
+        </div>
+        <label for="snippet-code">Code</label>
+        <textarea id="snippet-code" rows="5" required spellcheck="false"></textarea>
+        <div class="form-actions">
+          <button type="submit" id="save-btn" class="btn btn-primary">Add snippet</button>
+          <button type="button" id="cancel-edit-btn" class="btn btn-ghost" hidden>Cancel</button>
+        </div>
+      </form>
+
+      <input id="search" type="search" class="search" placeholder="Search title, label or code…" aria-label="Search snippets">
+      <p id="vault-status" class="muted small" role="status"></p>
+
+      <ul id="snippet-list" class="snippet-list"></ul>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
