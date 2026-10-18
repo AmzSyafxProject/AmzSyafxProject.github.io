@@ -317,7 +317,6 @@
 <div id="intro" role="dialog" aria-label="AMZProject Unity intro">
   <div class="i-vshade" aria-hidden="true"></div>
   <div class="i-load" aria-hidden="true"><i></i></div>
-  <div class="i-count" aria-hidden="true"><span>3</span><span>2</span><span>1</span></div>
   <div class="i-text" aria-hidden="true">
     <div class="i-word">AMZProject</div>
     <div class="i-unity">UNITY</div>
@@ -473,6 +472,18 @@
   // 3 star layers (parallax)
   const layers = [0, 1, 2].map(k => { const n = (lite ? 60 : 110) + k * 25, a = []; for (let i = 0; i < n; i++) a.push([Math.random(), Math.random(), Math.random() * 6.28]); return a; });
 
+  // the real AMZProject mark, pre-rendered once: star-white A, cyan ring (back half dimmer), gap where the ring crosses the A, end dot
+  const logoC = mk(Math.round(.72 * U * dpr * 1.2), Math.round(.72 * U * dpr * 1.2));
+  { const g = logoC.getContext('2d'), k = logoC.width / 200, R = -16 * Math.PI / 180; g.scale(k, k);
+    const arc = (a0, a1) => { g.beginPath(); g.ellipse(100, 116, 84, 26, R, a0, a1); };
+    g.lineCap = 'round'; g.strokeStyle = '#22C3EE';
+    g.globalAlpha = .55; g.lineWidth = 11; arc(Math.PI, Math.PI * 2); g.stroke(); g.globalAlpha = 1;
+    const aL = mk(logoC.width, logoC.height), ag = aL.getContext('2d'); ag.scale(k, k);
+    ag.fillStyle = '#F2F4FF'; ag.beginPath(); [[100, 28], [164, 172], [134, 172], [100, 94], [66, 172], [36, 172]].forEach((q, i) => i ? ag.lineTo(q[0], q[1]) : ag.moveTo(q[0], q[1])); ag.closePath(); ag.fill();
+    ag.globalCompositeOperation = 'destination-out'; ag.lineWidth = 24; ag.lineCap = 'round'; ag.beginPath(); ag.ellipse(100, 116, 84, 26, R, 0, Math.PI); ag.stroke();
+    g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(aL, 0, 0); g.restore();
+    g.lineWidth = 11; arc(0, Math.PI); g.stroke();
+    g.fillStyle = '#22C3EE'; g.beginPath(); g.arc(180.7, 92.8, 13, 0, 7); g.fill(); }
   const clamp = v => Math.max(0, Math.min(1, v));
   const ease = k => k * k * (3 - 2 * k), outC = k => 1 - Math.pow(1 - k, 3), outQ = k => 1 - Math.pow(1 - k, 5);
   const T_LOGO = 2.3, T_LEAVE = 5.0, T_END = 5.9;
@@ -517,23 +528,20 @@
     const mx = gx + ox, my = gy + oy - gr * .1;
     cx.strokeStyle = 'rgba(160,175,255,.10)'; cx.lineWidth = 1; cx.beginPath(); cx.ellipse(gx, gy - gr * .1, gr * 1.7, gr * .52, 0, 0, 6.2832); cx.stroke();
     if (!behind) spr(moonS, mx, my, 1, 1 + .25 * Math.sin(orbit.a));
-    // brand mark: orbiting A appears after the fly-through
+    // brand mark (exact logo): appears after the fly-through
     const lp = clamp((t - T_LOGO) / 1.1);
     if (lp > 0) {
-      const a = outQ(lp), cxx = W / 2, cyy = H * .41, s = Math.min(W, H) * .0036 * (.55 + .45 * a);
-      cx.save(); cx.translate(cxx, cyy); cx.globalAlpha = a;
-      cx.globalCompositeOperation = 'lighter'; const gg = cx.createRadialGradient(0, 0, 0, 0, 0, 190 * s); gg.addColorStop(0, 'rgba(110,120,255,.5)'); gg.addColorStop(1, 'rgba(60,90,255,0)'); cx.fillStyle = gg; cx.fillRect(-200 * s, -200 * s, 400 * s, 400 * s); cx.globalCompositeOperation = 'source-over';
-      cx.scale(s, s); cx.translate(-100, -100);
-      const lg = cx.createLinearGradient(40, 28, 164, 172); lg.addColorStop(0, '#8B6BFF'); lg.addColorStop(.55, '#5A7BFF'); lg.addColorStop(1, '#22D3F5');
-      cx.fillStyle = lg; cx.beginPath(); cx.moveTo(100, 28); cx.lineTo(164, 172); cx.lineTo(134, 172); cx.lineTo(100, 94); cx.lineTo(66, 172); cx.lineTo(36, 172); cx.closePath(); cx.fill();
-      cx.strokeStyle = 'rgba(190,175,255,' + (.85 * a) + ')'; cx.lineWidth = 5; cx.beginPath(); cx.ellipse(100, 160, 84, 26, -.28, 0, 6.2832); cx.stroke();
-      const sa = t * 1.6; cx.fillStyle = '#6FE6FF'; cx.shadowColor = '#22C3EE'; cx.shadowBlur = 18; cx.beginPath(); const sx = Math.cos(sa) * 84, sy = Math.sin(sa) * 26, c = Math.cos(-.28), sn = Math.sin(-.28); cx.arc(100 + sx * c - sy * sn, 160 + sx * sn + sy * c, 7, 0, 6.2832); cx.fill();
-      cx.restore();
+      const a = outQ(lp), cxx = W / 2, cyy = H * .41, sz = Math.min(W, H) * .72 * (.7 + .3 * a);
+      cx.save(); cx.translate(cxx, cyy);
+      cx.globalCompositeOperation = 'lighter'; const gg = cx.createRadialGradient(0, 0, 0, 0, 0, sz * .62); gg.addColorStop(0, 'rgba(110,120,255,' + (.42 * a) + ')'); gg.addColorStop(1, 'rgba(60,90,255,0)'); cx.fillStyle = gg; cx.fillRect(-sz, -sz, sz * 2, sz * 2); cx.globalCompositeOperation = 'source-over';
+      cx.globalAlpha = a; cx.drawImage(logoC, -sz / 2, -sz / 2, sz, sz); cx.restore();
     }
     if (behind) spr(moonS, mx, my, .55, .9);
     // soft flash when the mark lands
     const fl = clamp(1 - Math.abs(t - T_LOGO - .35) / .5) * .5;
     if (fl > 0) { cx.globalCompositeOperation = 'lighter'; spr({ c: flareG, m: 0 }, W / 2, H * .41, fl, 1.6); cx.globalCompositeOperation = 'source-over'; }
+    // slow fade-in out of black: stars and planets emerge from the dark
+    const fi = 1 - outC(clamp(t / 2.4)); if (fi > 0) { cx.globalAlpha = fi; cx.fillStyle = '#000'; cx.fillRect(0, 0, W, H); }
     cx.globalAlpha = 1;
   };
 
