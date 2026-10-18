@@ -152,6 +152,12 @@
   .beta-pill .bp-time { font-variant-numeric: tabular-nums; font-weight: 600; }
   .beta-pill:hover { background: rgba(123,92,255,.26); }
   @media (max-width: 560px) { .beta-pill { margin-left: 0; font-size: 12px; } }
+  /* login button (links to /vault/) */
+  .hdr-right { display: flex; align-items: center; gap: 10px; }
+  .login-btn { display: inline-flex; align-items: center; padding: 7px 16px; border-radius: 999px; border: 1px solid var(--line); background: rgba(242,244,255,.06); color: var(--star); text-decoration: none; font-size: 14px; font-weight: 600; white-space: nowrap; transition: background .25s, border-color .25s; }
+  .login-btn:hover { background: rgba(242,244,255,.14); border-color: var(--aqua); }
+  @media (max-width: 560px) { .hdr-right { gap: 6px; } .login-btn { padding: 5px 12px; font-size: 12px; } }
+  @media (max-width: 440px) { .mark-text { display: none; } } /* make room for the login button on phones */
   .beta-card { margin-top: 22px; max-width: 460px; padding: 16px 18px; border-radius: 20px; border: 1px solid rgba(123,92,255,.35); background: linear-gradient(160deg, rgba(123,92,255,.14), rgba(34,211,245,.06)); }
   .beta-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
   .beta-card h3 { font-family: var(--display); font-weight: 700; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--aqua); }
@@ -871,12 +877,15 @@
 <header id="top">
   <a class="mark" href="#" aria-label="AMZProject Unity home">
     <svg viewBox="0 0 200 200" aria-hidden="true"><defs><mask id="hdr-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="200"><rect width="200" height="200" fill="#fff"/><path d="M180.7 92.8 A84 26 -16 0 1 19.3 139.2" fill="none" stroke="#000" stroke-width="24"/></mask></defs><path d="M19.3 139.2 A84 26 -16 0 1 180.7 92.8" fill="none" stroke="#22C3EE" stroke-width="11" stroke-linecap="round" opacity=".55"/><polygon points="100,28 164,172 134,172 100,94 66,172 36,172" fill="#F2F4FF" mask="url(#hdr-cut)"/><path d="M180.7 92.8 A84 26 -16 0 1 19.3 139.2" fill="none" stroke="#22C3EE" stroke-width="11" stroke-linecap="round"/><circle cx="180.7" cy="92.8" r="13" fill="#22C3EE"/></svg>
-    AMZProject Unity
+    <span class="mark-text">AMZProject Unity</span>
   </a>
   <nav aria-label="Main">
     <a href="#kemas">KEMAS</a><a href="#rumahsync">RumahSync</a><a href="#forming">Upcoming</a><a href="#creed">Approach</a><a class="keep" href="https://github.com/AmzSyafxProject">GitHub</a>
   </nav>
-  <a class="beta-pill" id="betaPill" href="#beta" title="KEMAS public release: 25 Oct 2026"><span class="bp-tag">BETA</span><span class="bp-time" id="bpTime">--</span></a>
+  <div class="hdr-right">
+    <a class="beta-pill" id="betaPill" href="#beta" title="KEMAS public release: 25 Oct 2026"><span class="bp-tag">BETA</span><span class="bp-time" id="bpTime">--</span></a>
+    <a class="login-btn" href="vault/">Login</a>
+  </div>
 </header>
 
 <main>
