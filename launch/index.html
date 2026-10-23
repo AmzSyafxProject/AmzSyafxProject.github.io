@@ -1,0 +1,161 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KEMAS Launch Film · AMZProject Unity</title><meta name="description" content="KEMAS official public release, 25 October 2026. Countdown and launch film.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;500;700&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* Layout: 2.39:1 letterboxed film frame; slow camera push, grain, vignette, anamorphic flare, planet horizon. Palette taken from the real KEMAS icon (violet to cyan). Single dark look by choice. */
+:root{--bg:#04050a;--fg:#eef1fb;--muted:#8d95b3;--violet:#7b5cff;--blue:#5a7bff;--cyan:#22d3f5;--line:#1b2036;color-scheme:dark;
+--display:"Sora","Segoe UI",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,Consolas,monospace}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--display);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-x:hidden}
+.stage{position:relative;width:min(100%,calc((100vh - 90px)*16/9));aspect-ratio:16/9;background:#02030a;overflow:hidden;container-type:inline-size;border-radius:4px}
+.cam{position:absolute;inset:0;transform-origin:50% 55%;will-change:transform}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+.vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,transparent 45%,rgba(0,0,0,.75) 100%)}
+.grain{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;mix-blend-mode:overlay;opacity:.09}
+.lb{position:absolute;left:0;right:0;background:#000;height:0;transition:height 2.4s cubic-bezier(.2,.7,.2,1);z-index:5}
+.lb.t{top:0}.lb.b{bottom:0}.lb.in{height:12.6%}
+.flare{position:absolute;left:-60%;top:50%;width:60%;height:2px;margin-top:-1px;background:linear-gradient(90deg,transparent,rgba(120,200,255,.0) 10%,rgba(160,220,255,.95) 50%,rgba(150,120,255,.0) 90%,transparent);filter:blur(1px);box-shadow:0 0 40px 8px rgba(110,160,255,.35);opacity:0;z-index:3;pointer-events:none}
+.flare.go{animation:sweep 1.9s cubic-bezier(.5,0,.2,1) forwards}
+@keyframes sweep{0%{left:-60%;opacity:0}15%{opacity:1}100%{left:110%;opacity:0}}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 8%;opacity:0;visibility:hidden;transition:opacity 1.1s ease,visibility 0s 1.1s;z-index:2}
+.scene.on{opacity:1;visibility:visible;transition:opacity 1.1s ease}
+.a{opacity:0;transform:translateY(1.8cqw) scale(.985);filter:blur(10px);transition:opacity 1.4s ease,transform 1.8s cubic-bezier(.2,.7,.2,1),filter 1.4s ease}
+.on .a{opacity:1;transform:none;filter:none}
+.on .d1{transition-delay:.6s}.on .d2{transition-delay:1.3s}.on .d3{transition-delay:2s}
+.big{font-weight:200;font-size:8.6cqw;letter-spacing:-.03em;line-height:1.05;margin:0;text-shadow:0 0 60px rgba(120,150,255,.35)}
+.big b{font-weight:700;background:linear-gradient(100deg,var(--violet),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font-family:var(--mono);font-size:1.45cqw;color:var(--muted);letter-spacing:.22em;text-transform:uppercase;margin:0}
+.tag{font-family:var(--mono);font-size:1.35cqw;letter-spacing:.4em;color:var(--cyan);text-transform:uppercase;margin:0 0 1.8cqw}
+.mid{font-weight:300;font-size:6cqw;letter-spacing:-.02em;margin:0;text-shadow:0 0 50px rgba(120,150,255,.3)}
+.line{font-weight:300;font-size:2.1cqw;color:#bfc7e2;margin:2cqw 0 0;max-width:60%;line-height:1.6}
+.logo{width:16cqw;height:16cqw;margin-bottom:2.6cqw;filter:drop-shadow(0 0 3cqw rgba(110,120,255,.65)) drop-shadow(0 0 9cqw rgba(34,211,245,.35))}
+.logo.a{transform:scale(1.25);filter:blur(18px) drop-shadow(0 0 3cqw rgba(110,120,255,.65))}
+.on .logo.a{transform:scale(1);filter:drop-shadow(0 0 3cqw rgba(110,120,255,.65)) drop-shadow(0 0 9cqw rgba(34,211,245,.35));transition-duration:2.4s}
+.word{font-weight:700;font-size:6.6cqw;letter-spacing:.9em;margin:0 0 0 .9em;transition:letter-spacing 3s cubic-bezier(.2,.7,.2,1),opacity 1.8s ease,filter 1.8s ease,transform 1.8s ease}
+.on .word{letter-spacing:.36em;margin-left:.36em}
+.date{font-weight:300;font-size:5.4cqw;margin:0;letter-spacing:-.02em;text-shadow:0 0 50px rgba(120,150,255,.35)}
+.foot{font-family:var(--mono);font-size:1.3cqw;color:var(--muted);letter-spacing:.2em;margin-top:3cqw;text-transform:uppercase}
+.cd{display:flex;align-items:flex-start;gap:1.4cqw;font-variant-numeric:tabular-nums}
+.cd .u{display:flex;flex-direction:column;align-items:center;min-width:11cqw}
+.cd b{font-weight:200;font-size:9.5cqw;line-height:1;letter-spacing:-.04em;background:linear-gradient(180deg,#fff,#9fb4ff 70%,#22d3f5);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 2cqw rgba(110,140,255,.45))}
+.cd b.tick{animation:tick .45s ease-out}
+@keyframes tick{0%{transform:translateY(-.8cqw);opacity:.3}100%{transform:none;opacity:1}}
+.cd i{font-style:normal;font-family:var(--mono);font-size:1.15cqw;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-top:1cqw}
+.cd span{font-weight:200;font-size:7cqw;line-height:1.1;color:#5a6aa8}
+.bar{position:absolute;left:0;bottom:0;height:2px;width:0;background:linear-gradient(90deg,var(--violet),var(--cyan));z-index:6}
+.ctl{display:flex;gap:10px;align-items:center;font-family:var(--mono);font-size:12px;color:var(--muted);flex-wrap:wrap;justify-content:center}
+button{font:inherit;color:var(--fg);background:transparent;border:1px solid var(--line);border-radius:4px;padding:8px 14px;cursor:pointer}
+button:hover{border-color:var(--cyan)}button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+html,body{margin:0;height:100%;overflow:hidden}
+body{display:block;padding:0}
+.stage{position:fixed;inset:0;width:100vw;height:100vh;aspect-ratio:auto;border-radius:0}
+canvas#c{object-fit:cover}
+.ctl{position:fixed;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:20;opacity:0;transition:opacity .4s}
+body:hover .ctl,.ctl:focus-within{opacity:1}
+.ctl a{color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:8px 14px;background:rgba(2,3,10,.6)}
+.start{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#02030a;text-align:center;padding:24px}
+.start img{width:96px;height:96px}
+.start h1{font-weight:200;font-size:clamp(28px,5vw,52px);margin:0;letter-spacing:-.02em}
+.start h1 b{font-weight:700;background:linear-gradient(100deg,var(--violet),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.start p{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin:0}
+.start .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.start button{padding:12px 22px;font-size:14px}
+.start button.p{background:linear-gradient(100deg,var(--violet),var(--cyan));border:0;color:#04050a;font-weight:700}
+.start.hide{display:none}
+</style></head><body>
+<div class="start" id="start"><svg width="96" height="96" viewBox="0 0 512 512" aria-hidden="true"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B5CFF"/><stop offset=".55" stop-color="#5A7BFF"/><stop offset="1" stop-color="#22D3F5"/></linearGradient></defs><rect x="16" y="16" width="480" height="480" rx="124" fill="url(#sg)"/><rect x="150" y="132" width="60" height="248" rx="30" fill="#fff"/><path d="M 224 300 C 260 262, 298 222, 328 188" stroke="#fff" stroke-width="58" stroke-linecap="round" fill="none"/><path d="M 246 288 C 286 316, 328 350, 362 378" stroke="#fff" stroke-opacity=".82" stroke-width="58" stroke-linecap="round" fill="none"/></svg>
+<h1>Your PC, <b>Kemas.</b></h1><p>Official public release · 25 October 2026</p>
+<div class="row"><button class="p" id="go" type="button">Play with sound</button><button id="gom" type="button">Play muted</button></div></div>
+<audio id="au" src="launch.mp3" preload="auto"></audio>
+<div class="stage" id="stage">
+<div class="cam" id="cam">
+<canvas id="c"></canvas>
+<div class="scene" id="s0"><p class="big a">Your PC.</p></div>
+<div class="scene" id="s1"><p class="sub a" style="margin-bottom:1.8cqw">Kemas · Malay for “tidy”</p><p class="big a d1">Your PC, <b>Kemas.</b></p></div>
+<div class="scene" id="s2"><p class="tag a">Scan</p><p class="mid a d1">Find what is safe to clear.</p><p class="line a d2">Temporary files, caches and leftovers, listed for you to see.</p></div>
+<div class="scene" id="s3"><p class="tag a">Review</p><p class="mid a d1">You decide first.</p><p class="line a d2">Nothing is cleaned until you confirm it.</p></div>
+<div class="scene" id="s4"><p class="tag a">Clean</p><p class="mid a d1">Safe by design.</p><p class="line a d2">Windows Explorer and system files are left alone.</p></div>
+<div class="scene" id="s5">
+<svg class="logo a" viewBox="0 0 512 512" aria-label="KEMAS logo" role="img"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B5CFF"/><stop offset=".55" stop-color="#5A7BFF"/><stop offset="1" stop-color="#22D3F5"/></linearGradient><linearGradient id="gl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+<rect x="16" y="16" width="480" height="480" rx="124" fill="url(#bg)"/><rect x="16" y="16" width="480" height="480" rx="124" fill="url(#gl)"/>
+<rect x="150" y="132" width="60" height="248" rx="30" fill="#fff"/>
+<path d="M 224 300 C 260 262, 298 222, 328 188" stroke="#fff" stroke-width="58" stroke-linecap="round" fill="none"/>
+<path d="M 246 288 C 286 316, 328 350, 362 378" stroke="#fff" stroke-opacity=".82" stroke-width="58" stroke-linecap="round" fill="none"/>
+<path d="M 382 82 Q 382 128 428 128 Q 382 128 382 174 Q 382 128 336 128 Q 382 128 382 82 Z" fill="#fff"/><circle cx="434" cy="190" r="10" fill="#fff" fill-opacity=".85"/></svg>
+<p class="word a d1">KEMAS</p><p class="sub a d2" style="margin-top:2.4cqw">Your PC, Kemas.</p></div>
+<div class="scene" id="s6"><p class="tag a">Official public release · 25 October 2026</p>
+<div class="cd a d1" id="cd" aria-live="off"><div class="u"><b id="cdd">00</b><i>Days</i></div><span>:</span><div class="u"><b id="cdh">00</b><i>Hours</i></div><span>:</span><div class="u"><b id="cdm">00</b><i>Minutes</i></div><span>:</span><div class="u"><b id="cds">00</b><i>Seconds</i></div></div>
+<p class="date a d1" id="live" style="display:none">Available now.</p>
+<p class="sub a d2" style="margin-top:2.6cqw">Native Windows app · No account needed</p><p class="foot a d3">AMZProject Unity · Ceritareka Studio</p></div>
+</div>
+<div class="flare" id="flare"></div>
+<div class="vig"></div><canvas class="grain" id="gr" width="640" height="360"></canvas>
+<div class="lb t" id="lt"></div><div class="lb b" id="lbm"></div>
+<div class="bar" id="bar"></div>
+</div>
+<div class="ctl"><button id="replay" type="button">Replay</button><button id="mute" type="button">Mute</button><button id="fs" type="button">Fullscreen</button><a href="/">AMZProject Unity</a></div>
+<script>
+(function(){
+var cv=document.getElementById('c'),cx=cv.getContext('2d'),gr=document.getElementById('gr'),gx2=gr.getContext('2d');
+var cam=document.getElementById('cam'),flare=document.getElementById('flare'),lt=document.getElementById('lt'),lb=document.getElementById('lbm');
+var W,H,mode=-1,t0=0,raf,timers=[],glow=0,gfr=0,END=29;
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var N=170,P=[],B=[];
+function size(){W=cv.width=3840;H=cv.height=2160}
+var LAUNCH=Date.parse('2026-10-25T00:00:00+08:00'),last={};
+function pad(n){return(n<10?'0':'')+n}
+function setv(id,v){var e=document.getElementById(id);if(last[id]!==v){e.textContent=v;e.classList.remove('tick');void e.offsetWidth;e.classList.add('tick');last[id]=v}}
+function cdTick(){var ms=LAUNCH-Date.now();if(ms<=0){document.getElementById('cd').style.display='none';document.getElementById('live').style.display='block';return}
+ var s=Math.floor(ms/1000);setv('cdd',pad(Math.floor(s/86400)));setv('cdh',pad(Math.floor(s%86400/3600)));setv('cdm',pad(Math.floor(s%3600/60)));setv('cds',pad(s%60))}
+cdTick();setInterval(cdTick,250);
+function init(){P=[];B=[];for(var i=0;i<N;i++)P.push({x:Math.random(),y:Math.random(),z:.2+Math.random()*.8,a:Math.random()*6.28,r:0});
+ for(i=0;i<9;i++)B.push({x:Math.random(),y:Math.random(),s:.02+Math.random()*.05,z:.3+Math.random()*.7,a:Math.random()*6.28})}
+function draw(ts){
+ var t=(ts-t0)/1000,k=Math.min(Math.max(t/END,0),1);
+ cam.style.transform='scale('+(1+.09*k)+') translateY('+(-1.2*k)+'%)';
+ cx.clearRect(0,0,W,H);
+ var target=mode>=5?1:mode>=2?.4:.1;glow+=(target-glow)*.02;
+ var gx=W/2,gy=H*1.6,gr0=H*1.25;
+ var g=cx.createRadialGradient(gx,gy,gr0*.9,gx,gy,gr0*1.08);
+ g.addColorStop(0,'rgba(120,140,255,'+(.55*glow)+')');g.addColorStop(.1,'rgba(123,92,255,'+(.22*glow)+')');g.addColorStop(1,'rgba(2,3,10,0)');
+ cx.fillStyle=g;cx.fillRect(0,0,W,H);
+ cx.beginPath();cx.arc(gx,gy,gr0*.9,0,6.283);cx.fillStyle='#02030a';cx.fill();
+ cx.lineWidth=Math.max(1,W/800);cx.strokeStyle='rgba(150,210,255,'+(.12+.7*glow)+')';cx.beginPath();cx.arc(gx,gy,gr0*.9,Math.PI*1.22,Math.PI*1.78);cx.stroke();
+ // anamorphic streak behind the logo
+ if(mode>=5){var sg=cx.createLinearGradient(0,0,W,0);sg.addColorStop(0,'rgba(34,211,245,0)');sg.addColorStop(.5,'rgba(120,160,255,'+(.35*glow)+')');sg.addColorStop(1,'rgba(123,92,255,0)');cx.fillStyle=sg;cx.fillRect(0,H*.4-1,W,2)}
+ // bokeh
+ for(var j=0;j<B.length;j++){var b=B[j],bx=(b.x*W+Math.sin(t*.12+b.a)*30)%W,by=((b.y*H-t*4*b.z)%H+H)%H,br=b.s*W*b.z;
+  var bg=cx.createRadialGradient(bx,by,0,bx,by,br);bg.addColorStop(0,'rgba(130,160,255,.10)');bg.addColorStop(1,'rgba(130,160,255,0)');cx.fillStyle=bg;cx.beginPath();cx.arc(bx,by,br,0,6.283);cx.fill()}
+ // particles
+ var cxm=W/2,cym=H*.42,R=H*.24;
+ for(var i=0;i<N;i++){var p=P[i],dx=p.x*W+Math.sin(t*.15*p.z+p.a)*20*p.z,dy=((p.y*H-t*7*p.z)%H+H)%H;
+  var goal=(mode===5)?1:0;p.r+=(goal-p.r)*(goal?.012:.03);
+  var ang=p.a+t*.25*p.z,rr=R*(1+.05*Math.sin(i)),tx=cxm+Math.cos(ang)*rr,ty=cym+Math.sin(ang)*rr;
+  var px=dx+(tx-dx)*p.r,py=dy+(ty-dy)*p.r;
+  cx.globalAlpha=.25+.6*p.z;cx.fillStyle=i%5?'#cfe0ff':(i%2?'#22d3f5':'#9b7bff');cx.beginPath();cx.arc(px,py,p.z*W/900*1.5,0,6.283);cx.fill()}
+ cx.globalAlpha=1;
+ if(++gfr%3===0){var im=gx2.createImageData(640,360),d=im.data;for(var q=0;q<d.length;q+=4){var v=Math.random()*255;d[q]=d[q+1]=d[q+2]=v;d[q+3]=255}gx2.putImageData(im,0,0)}
+ raf=requestAnimationFrame(draw)}
+function show(i){mode=i;for(var s=0;s<7;s++)document.getElementById('s'+s).classList.toggle('on',s===i);
+ if(i===5){flare.classList.remove('go');void flare.offsetWidth;flare.classList.add('go')}}
+var plan=[[0.4,0],[3.6,1],[7.4,2],[11,3],[14.6,4],[18.2,5],[23.5,6]];
+function run(){
+ timers.forEach(clearTimeout);timers=[];show(-1);flare.classList.remove('go');
+ lt.classList.remove('in');lb.classList.remove('in');void lt.offsetWidth;lt.classList.add('in');lb.classList.add('in');
+ var bar=document.getElementById('bar');bar.style.transition='none';bar.style.width='0';void bar.offsetWidth;bar.style.transition='width '+END+'s linear';bar.style.width='100%';
+ plan.forEach(function(s){timers.push(setTimeout(function(){show(s[1])},s[0]*1000))});
+ for(var i=0;i<P.length;i++)P[i].r=0;glow=0;t0=performance.now()}
+size();init();addEventListener('resize',size);
+var cap=/[?&]cap=1/.test(location.search);window.__cap=cap;
+var au=document.getElementById('au'),st=document.getElementById('start');
+function begin(snd){st.classList.add('hide');if(snd){try{au.currentTime=0;au.muted=false;au.play().catch(function(){})}catch(e){}}run()}
+if(cap){st.classList.add('hide');document.querySelector('.ctl').style.display='none';raf=requestAnimationFrame(draw);run()}
+else if(reduce){st.classList.add('hide');show(5);mode=5;glow=1;lt.classList.add('in');lb.classList.add('in');draw(0);cancelAnimationFrame(raf);document.getElementById('bar').style.width='100%'}
+else{raf=requestAnimationFrame(draw);document.getElementById('go').onclick=function(){begin(true)};document.getElementById('gom').onclick=function(){begin(false)}}
+document.getElementById('replay').onclick=function(){if(!reduce){try{au.currentTime=0;au.play().catch(function(){})}catch(e){}run()}};
+document.getElementById('mute').onclick=function(){au.muted=!au.muted;this.textContent=au.muted?'Unmute':'Mute'};
+document.getElementById('fs').onclick=function(){try{var e=document.documentElement;(e.requestFullscreen||function(){}).call(e)}catch(x){}};
+})();
+</script>
+</body></html>
