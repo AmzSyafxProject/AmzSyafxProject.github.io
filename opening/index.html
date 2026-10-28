@@ -62,10 +62,10 @@ h1,h2,h3{font-weight:800;letter-spacing:-.04em;line-height:1}
 @keyframes strike{to{transform:scaleX(1)}}
 .stage{position:relative;height:min(78vh,640px);min-height:520px;perspective:1600px;display:flex;align-items:center;justify-content:center}
 .phone{position:absolute;width:min(300px,62vw);aspect-ratio:9/19.5;border-radius:15%/7%;padding:12px;background:linear-gradient(140deg,#6d7b75,#141b19 30%,#26312d 62%,#7d8b85);box-shadow:0 0 0 2px #8a9892 inset,0 40px 70px -30px rgba(13,42,36,.6);transform-style:preserve-3d;will-change:transform}
-.phone .scr{position:absolute;inset:12px;border-radius:12% / 6%;overflow:hidden;background:#f5f8f6}
+.phone .scr{position:absolute;inset:12px;border-radius:12% / 6%;overflow:hidden;background:#f5f8f6;clip-path:inset(0 round 12% / 6%);transform:translateZ(0)}
 .phone .scr img{width:100%;height:100%;object-fit:cover;object-position:top}
 .phone .isl{position:absolute;left:50%;top:18px;width:30%;height:14px;margin-left:-15%;border-radius:20px;background:#000;z-index:2}
-.phone .gl{position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.28),transparent 35%,transparent 70%,rgba(255,255,255,.1));pointer-events:none;z-index:2}
+.phone .gl{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,rgba(255,255,255,.28),transparent 35%,transparent 70%,rgba(255,255,255,.1));pointer-events:none;z-index:2}
 .p1{transform:translate(-18%,0) rotateY(18deg) rotateZ(-4deg);animation:p1in 1.1s cubic-bezier(.2,.9,.2,1) .4s both}
 .p2{transform:translate(20%,6%) rotateY(-16deg) rotateZ(4deg);animation:p2in 1.2s cubic-bezier(.2,.9,.2,1) .55s both;z-index:-1}
 @keyframes p1in{from{opacity:0;transform:translate(-40%,30%) rotateY(70deg)}}
@@ -213,7 +213,7 @@ footer small{font:700 11px/1 var(--m);letter-spacing:.3em;text-transform:upperca
       </h1>
       <p class="lead" style="opacity:0;animation:rise .8s .9s forwards">Rent, bills and receipts for your shared house. One app, everyone sees the same thing.</p>
       <div class="cta" style="opacity:0;animation:rise .8s 1.05s forwards">
-        <a class="btn" href="#countdown">See the countdown</a>
+        <a class="btn" id="cta1" href="#countdown">See the countdown</a>
         <a class="btn ghost" href="#how">How to join</a>
       </div>
     </div>
@@ -324,7 +324,7 @@ footer small{font:700 11px/1 var(--m);letter-spacing:.3em;text-transform:upperca
       wasLive=true;document.body.classList.add('live');
       $('ct').textContent='FIRST RELEASE CANDIDATE IN';
       $('lab').innerHTML='<span>DAYS</span><span>HRS</span><span>MIN</span><span>SEC</span>';
-      $('pillTxt').textContent='Register now';
+      $('pillTxt').textContent='Register now';var P=$('pill');P.href='https://tally.so/r/rDDL2L';P.target='_blank';P.rel='noopener';var C1=$('cta1');C1.textContent='Register for the beta →';C1.href='https://tally.so/r/rDDL2L';C1.target='_blank';C1.rel='noopener';
       burst();
     }
     var ms=RC-now;
