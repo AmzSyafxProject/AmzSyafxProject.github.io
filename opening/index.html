@@ -34,14 +34,14 @@ video{width:100%;height:100%;display:block;object-fit:cover;background:#000}
 .skip{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:14px;z-index:20;font:700 13px var(--m);color:var(--ink);background:rgba(255,255,255,.7);border:1.5px solid rgba(13,42,36,.16);border-radius:999px;padding:9px 16px;text-decoration:none;backdrop-filter:blur(8px)}
 /* countdown */
 .tag{font-family:var(--m);font-size:clamp(11px,2.6vw,14px);letter-spacing:.3em;opacity:.65;text-transform:uppercase}
-h2{font-size:clamp(40px,9vw,92px);font-weight:800;letter-spacing:-.045em;line-height:1;margin:10px 0 clamp(20px,4vh,40px)}
-.ring{container-type:inline-size;position:relative;width:min(86vw,60vh,560px);aspect-ratio:1}
+h2{font-size:clamp(38px,8vw,80px);font-weight:800;letter-spacing:-.045em;line-height:1;margin:8px 0 clamp(14px,3vh,32px)}
+.ring{container-type:inline-size;position:relative;width:min(84vw,44vh,520px);aspect-ratio:1}
 .ring svg{position:absolute;inset:0;width:100%;height:100%}
 .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.in small{font-family:var(--m);font-size:clamp(10px,2.4vw,14px);letter-spacing:.3em;color:#0b8f6c}
-.dig{font-size:15cqw;font-weight:800;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums;margin:.1em 0}
+.in small{font-family:var(--m);font-size:max(8px,2.6cqw);letter-spacing:.2em;color:#0b8f6c;text-align:center;padding:0 12%}
+.dig{font-size:14cqw;font-weight:800;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums;margin:.1em 0}
 .dig i{font-style:normal;opacity:.3;margin:0 .02em}
-.lab{display:flex;gap:clamp(18px,6vw,44px);font-family:var(--m);font-size:clamp(9px,2.2vw,12px);letter-spacing:.24em;color:#3b5a52}
+.lab{display:flex;gap:6cqw;font-family:var(--m);font-size:max(8px,2.2cqw);letter-spacing:.2em;color:#3b5a52}
 .when{margin-top:clamp(16px,3vh,28px);display:inline-block;padding:13px 26px;border-radius:999px;background:var(--ink);color:#fff;font-weight:800;font-size:clamp(15px,3.6vw,20px);box-shadow:0 24px 50px -20px rgba(13,42,36,.6)}
 .note{margin-top:14px;font-size:clamp(14px,3.2vw,18px);font-weight:700;color:#3b5a52}
 .foot{margin-top:18px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center;font:700 12px var(--m);letter-spacing:.14em}
@@ -72,29 +72,34 @@ canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:30}
    <circle cx="350" cy="350" r="290" fill="rgba(255,255,255,.6)" stroke="rgba(13,42,36,.08)" stroke-width="2"/>
    <circle id="rp" cx="350" cy="350" r="312" fill="none" stroke="url(#rg)" stroke-width="22" stroke-linecap="round" transform="rotate(-90 350 350)" stroke-dasharray="1960" stroke-dashoffset="1960"/>
    <circle id="rdot" r="20" fill="#fff" stroke="#7c5cff" stroke-width="8" cx="350" cy="38"/></svg>
-  <div class="in"><small id="ct">OPENS IN</small><div class="dig" id="dig" role="timer" aria-live="off">00<i>:</i>00<i>:</i>00</div><div class="lab"><span>HRS</span><span>MIN</span><span>SEC</span></div></div>
+  <div class="in"><small id="ct">OPENS IN</small><div class="dig" id="dig" role="timer" aria-live="off">00<i>:</i>00<i>:</i>00</div><div class="lab" id="lab"><span>HRS</span><span>MIN</span><span>SEC</span></div></div>
  </div>
  <div id="wait2"><span class="when">Wed 28 Oct · 8:00 PM MYT</span><p class="note">Be ready. The sign-up link appears right here.</p></div>
- <div id="open2" style="display:none"><a class="btn" id="reg" href="https://tally.so/r/rDDL2L" rel="noopener" target="_blank" style="margin-top:22px;font-size:20px;padding:18px 38px">Register for the beta →</a><p class="note">Email &amp; phone only. Registered testers get Premium free.</p></div>
+ <div id="open2" style="display:none"><a class="btn" id="reg" href="https://tally.so/r/rDDL2L" rel="noopener" target="_blank" style="margin-top:22px;font-size:20px;padding:18px 38px">Register for the beta →</a><p class="note">Email &amp; phone only. Registered testers get Premium free.</p><span class="when" style="margin-top:14px;background:#ff5a47">First release candidate · 1 Nov</span></div>
  <div class="foot"><button id="replay" type="button">↺ Replay the film</button><a href="/?s=1">AMZProject Unity</a><a href="/#rumahsync">About RumahSync</a></div>
 </section>
 <canvas id="cf"></canvas>
 <script>
 (function(){
-var OPEN=Date.parse('2026-10-28T20:00:00+08:00'),START=Date.parse('2026-10-28T00:00:00+08:00');
+var OPEN=Date.parse('2026-10-28T20:00:00+08:00'),START=Date.parse('2026-10-28T00:00:00+08:00'),RC=Date.parse('2026-11-01T00:00:00+08:00');   /* RC = beta first release candidate, 1 Nov 2026 */
 var $=function(i){return document.getElementById(i)},v=$('v'),film=$('film'),cd=$('cd'),ov=$('ov');
 try{sessionStorage.setItem('amz-open-seen','1')}catch(e){}
 var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,wasLive=false;
 function pad(n){return(n<10?'0':'')+n}
 function show(w){film.classList.toggle('on',w==='film');cd.classList.toggle('on',w==='cd');$('skip').style.display=w==='film'?'':'none'}
 function goCd(){try{v.pause()}catch(e){}show('cd')}
+function ring(pr){$('rp').style.strokeDashoffset=1960*(1-pr);var a=-Math.PI/2+pr*2*Math.PI;$('rdot').setAttribute('cx',350+312*Math.cos(a));$('rdot').setAttribute('cy',350+312*Math.sin(a))}
 function tick(){
- var now=Date.now(),ms=OPEN-now;
- if(ms<=0){if(!wasLive){wasLive=true;document.body.classList.add('live');$('open2').style.display='block';$('wait2').style.display='none';$('dig').innerHTML='GO<i>!</i>';$('ct').textContent='LIVE NOW';document.querySelector('.lab').style.visibility='hidden';$('rp').style.strokeDashoffset=0;if(cd.classList.contains('on'))burst()}return}
- var s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=s%60;
- $('dig').innerHTML=pad(h)+'<i>:</i>'+pad(m)+'<i>:</i>'+pad(c);
- var pr=Math.min(1,Math.max(0,(now-START)/(OPEN-START)));$('rp').style.strokeDashoffset=1960*(1-pr);
- var a=-Math.PI/2+pr*2*Math.PI;$('rdot').setAttribute('cx',350+312*Math.cos(a));$('rdot').setAttribute('cy',350+312*Math.sin(a))}
+ var now=Date.now();
+ if(now<OPEN){var s=Math.floor((OPEN-now)/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=s%60;
+  $('dig').innerHTML=pad(h)+'<i>:</i>'+pad(m)+'<i>:</i>'+pad(c);ring(Math.min(1,Math.max(0,(now-START)/(OPEN-START))));return}
+ /* phase 2: registration is open, count down to the first release candidate */
+ if(!wasLive){wasLive=true;document.body.classList.add('live');$('open2').style.display='block';$('wait2').style.display='none';
+  $('ct').textContent='FIRST RELEASE CANDIDATE IN';$('lab').innerHTML='<span>DAYS</span><span>HRS</span><span>MIN</span><span>SEC</span>';
+  if(cd.classList.contains('on')&&now-OPEN<60000)burst()}
+ var ms=RC-now;if(ms<=0){$('dig').innerHTML='NOW';$('ct').textContent='FIRST RELEASE CANDIDATE';$('lab').style.visibility='hidden';ring(1);return}
+ var s2=Math.floor(ms/1000),d=Math.floor(s2/86400),h2=Math.floor(s2%86400/3600),m2=Math.floor(s2%3600/60),c2=s2%60;
+ $('dig').innerHTML=pad(d)+'<i>:</i>'+pad(h2)+'<i>:</i>'+pad(m2)+'<i>:</i>'+pad(c2);ring(Math.min(1,Math.max(0,(now-OPEN)/(RC-OPEN))))}
 tick();setInterval(tick,250);
 v.addEventListener('ended',goCd);
 $('play').onclick=function(){ov.classList.add('hide');v.currentTime=0;v.muted=false;var p=v.play();if(p&&p.catch)p.catch(function(){v.muted=true;v.play()})};
