@@ -182,6 +182,13 @@ footer small{font:700 11px/1 var(--m);letter-spacing:.3em;text-transform:upperca
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .reveal{opacity:1;transform:none}
 }
+
+.gal{display:flex;gap:28px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 20px 40px;margin:0 -20px;scrollbar-width:none}
+.gal::-webkit-scrollbar{display:none}
+.gi{flex:0 0 auto;scroll-snap-align:center;text-align:center;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.gi:hover{transform:translateY(-10px)}
+.gi .phone{position:relative;width:min(250px,64vw);margin:0 auto}
+.gi h4{margin-top:18px;font-size:18px}.gi p{margin-top:4px;color:var(--ink2);font-size:15px}
 </style>
 </head>
 <body>
@@ -265,6 +272,8 @@ footer small{font:700 11px/1 var(--m);letter-spacing:.3em;text-transform:upperca
     </div>
   </div>
 </section>
+
+<section id="screens"><div class="wrap"><div class="sec-h reveal"><p class="tag">Inside the app</p><h2>Every screen, <span class="g">made simple.</span></h2></div><div class="gal reveal"><div class="gi"><div class="phone"><div class="scr"><img loading="lazy" src="shots/home-owner.jpg" alt="RumahSync Home screen"></div><div class="isl"></div><div class="gl"></div></div><h4>Home</h4><p>Rent, bills and who has paid, at a glance.</p></div><div class="gi"><div class="phone"><div class="scr"><img loading="lazy" src="shots/bills-owner.jpg" alt="RumahSync Bills screen"></div><div class="isl"></div><div class="gl"></div></div><h4>Bills</h4><p>Split to the sen, DuitNow QR.</p></div><div class="gi"><div class="phone"><div class="scr"><img loading="lazy" src="shots/residents.jpg" alt="RumahSync Residents screen"></div><div class="isl"></div><div class="gl"></div></div><h4>Residents</h4><p>Balances and reminders per housemate.</p></div><div class="gi"><div class="phone"><div class="scr"><img loading="lazy" src="shots/reports.jpg" alt="RumahSync Reports screen"></div><div class="isl"></div><div class="gl"></div></div><h4>Reports</h4><p>Spending vs collected, export to CSV.</p></div><div class="gi"><div class="phone"><div class="scr"><img loading="lazy" src="shots/issues.jpg" alt="RumahSync Issues screen"></div><div class="isl"></div><div class="gl"></div></div><h4>Issues</h4><p>Log repairs, send to WhatsApp.</p></div><div class="gi"><div class="phone"><div class="scr"><img loading="lazy" src="shots/home-tenant.jpg" alt="RumahSync Tenant view screen"></div><div class="isl"></div><div class="gl"></div></div><h4>Tenant view</h4><p>Housemates see only what matters.</p></div></div></div></section>
 
 <section id="countdown">
   <div class="wrap cd">
