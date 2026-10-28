@@ -949,7 +949,6 @@
       const g = ox.createRadialGradient(b.sx - s * .35, b.sy - s * .4, s * .1, b.sx, b.sy, s); g.addColorStop(0, '#fff'); g.addColorStop(.25, b.c1); g.addColorStop(1, b.c2);
       ox.globalAlpha = b.live ? 1 : (b.front ? .9 : .55); ox.fillStyle = g; ox.beginPath(); ox.arc(b.sx, b.sy, s, 0, 7); ox.fill(); ox.globalAlpha = 1;
       if (!b.live) { ox.strokeStyle = 'rgba(255,195,107,.5)'; ox.setLineDash([2, 4]); ox.beginPath(); ox.arc(b.sx, b.sy, s + 6, t * 1.5, t * 1.5 + 4.2); ox.stroke(); ox.setLineDash([]); }
-      if (b.live) { ox.font = '600 13px Unbounded, sans-serif'; ox.fillStyle = '#F2F4FF'; ox.textAlign = 'center'; ox.fillText(b.name, b.sx, b.sy + s + 24); }
     };
     bodies.filter(b => !b.front).forEach(drawBody);
     // core
@@ -963,6 +962,13 @@
     bodies.forEach(b => { const grd = ox.createLinearGradient(cx, cy, b.sx, b.sy); grd.addColorStop(0, 'rgba(123,92,255,.0)'); grd.addColorStop(1, b.live ? 'rgba(' + (b.glow || '47,212,255') + ',.35)' : 'rgba(255,138,91,.14)');
       ox.strokeStyle = grd; ox.lineWidth = 1; ox.beginPath(); ox.moveTo(cx, cy); ox.lineTo(b.sx, b.sy); ox.stroke(); });
     bodies.filter(b => b.front).forEach(drawBody);
+    // labels last so no planet covers them
+    ox.font = '600 13px Unbounded, sans-serif'; ox.textAlign = 'center';
+    const liveB = bodies.filter(b => b.live);
+    liveB.forEach(b => { const s2 = b.size * (b.front ? 1.12 : .86);
+      const clash = liveB.some(o => o !== b && Math.abs(o.sx - b.sx) < 110 && Math.abs(o.sy - b.sy) < 40);
+      const ly = clash && b.sx > cx ? b.sy - s2 - 14 : b.sy + s2 + 24;
+      ox.lineWidth = 4; ox.strokeStyle = 'rgba(8,12,38,.9)'; ox.strokeText(b.name, b.sx, ly); ox.fillStyle = '#F2F4FF'; ox.fillText(b.name, b.sx, ly); });
   }
 
   function drawSky(t) {
