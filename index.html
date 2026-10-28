@@ -941,7 +941,7 @@
   sizeOrbit();
   if (window.ResizeObserver) new ResizeObserver(sizeOrbit).observe(oc);
   const bodies = [
-    { name: 'RumahSync', note: 'Project 002 · Beta · Opening soon', id: 'rumahsync', glow: '25,217,164', r: .23, speed: .22, size: 15, c1: '#5eecc4', c2: '#18d6a0', live: true, a: .4 },
+    { name: 'RumahSync', note: (Date.now()>=Date.parse('2026-10-28T20:00:00+08:00')?'Project 002 · Beta is open':'Project 002 · Beta · Opening soon'), id: 'rumahsync', glow: '25,217,164', r: .23, speed: .22, size: 15, c1: '#5eecc4', c2: '#18d6a0', live: true, a: .4 },
     { name: 'KEMAS', note: 'Project 001 · Live now', id: 'kemas', r: .32, speed: -.15, size: 11, c1: '#7B5CFF', c2: '#2FD4FF', live: true, a: 2.2 },
     { name: 'Project in design', note: 'Designing', r: .40, speed: .11, size: 9, c1: '#9CF5FF', c2: '#2F8CFF', a: 4.1 },
     { name: 'Early concept', note: 'Concept', r: .465, speed: -.08, size: 7, c1: '#D7C9FF', c2: '#7B5CFF', a: 1.0 },
@@ -1028,6 +1028,13 @@
 })();
 
 </script>
-<script>/* beta pill flips to Register at 8PM */(function(){var a=document.getElementById('beta-pill');if(!a)return;if(Date.now()>=Date.parse('2026-10-28T20:00:00+08:00')){a.href='/opening/';a.querySelector('.bp-time').textContent='Register now'}})();</script>
+<script>/* at 8PM MYT, 28 Oct 2026: everything flips to "Beta is open" and links straight to the Tally form */(function(){var T='https://tally.so/r/rDDL2L',O=Date.parse('2026-10-28T20:00:00+08:00'),done=0;
+function L(a){a.href=T;a.target='_blank';a.rel='noopener'}
+function go(){if(done||Date.now()<O)return;done=1;
+var a=document.getElementById('beta-pill');if(a){L(a);a.title='RumahSync beta is open. Register now';a.querySelector('.bp-time').textContent='Beta is open'}
+var h=document.querySelector('.hero-chip');if(h)h.innerHTML='<i></i><b>RumahSync</b> Beta is open \u00b7 Register now';
+var st=document.querySelector('.status.beta');if(st)st.innerHTML='<i></i>Project 002 \u00b7 Beta is open';
+var b=document.querySelector('.beta-btn');if(b){var n=document.createElement('a');n.className=b.className;n.innerHTML='<i class="soon-dot"></i>Beta is open \u00b7 Register';L(n);n.style.cursor='pointer';b.replaceWith(n)}}
+go();setInterval(go,1000)})();</script>
 </body>
 </html>
