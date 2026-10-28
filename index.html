@@ -361,7 +361,7 @@
   .rs-card .cta { animation: rsbtn 3.2s 2.4s infinite; }
   @keyframes rsfloat { 50% { transform: translateY(-12px); } }
   @keyframes rsbtn { 0%, 70%, 100% { transform: scale(1); } 80% { transform: scale(1.04); } 90% { transform: scale(.99); } }
-  @media (max-width: 560px) { .rs-toast { right: 0; bottom: 8%; } }
+  @media (max-width: 560px) { .rs-toast { display: none; } }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .hero h1 .w > span, .hero p.lede, .actions, .reveal { transform: none !important; opacity: 1 !important; }
