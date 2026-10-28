@@ -4,6 +4,7 @@
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* RumahSync beta opening: first visit of the session goes to the film + countdown until 8PM, 28 Oct 2026 (MYT) */try{if(Date.now()<Date.parse('2026-10-28T20:00:00+08:00')&&!/[?&]s=1/.test(location.search)&&!sessionStorage.getItem('amz-open-seen')&&/^\/(index\.html)?$/.test(location.pathname))location.replace('/opening/')}catch(e){}</script>
 <title>AMZProject Unity</title>
 <meta name="description" content="AMZProject Unity — home of RumahSync, the shared-house rent and bills app heading into beta, plus KEMAS and the projects still forming.">
 <meta property="og:title" content="AMZProject Unity">
@@ -636,7 +637,7 @@
     <a href="#rumahsync">RumahSync</a><a href="#kemas">KEMAS</a><a href="#forming">Upcoming</a><a href="#creed">Approach</a><a class="keep" href="https://github.com/AmzSyafxProject">GitHub</a>
   </nav>
   <div class="hdr-right">
-    <a class="beta-pill" href="#rumahsync" title="RumahSync beta is opening soon"><span class="bp-tag">BETA</span><span class="bp-time">Opening soon</span></a>
+    <a class="beta-pill" id="beta-pill" href="/opening/" title="RumahSync beta registration opens tonight, 8PM"><span class="bp-tag">BETA</span><span class="bp-time">Opens tonight 8PM</span></a>
     <a class="login-btn" href="vault/">Login</a>
   </div>
 </header>
@@ -986,5 +987,6 @@
 })();
 
 </script>
+<script>/* beta pill flips to Register at 8PM */(function(){var a=document.getElementById('beta-pill');if(!a)return;if(Date.now()>=Date.parse('2026-10-28T20:00:00+08:00')){a.href='/opening/';a.querySelector('.bp-time').textContent='Register now'}})();</script>
 </body>
 </html>
