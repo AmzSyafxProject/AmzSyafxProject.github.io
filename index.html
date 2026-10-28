@@ -361,7 +361,32 @@
   .rs-card .cta { animation: rsbtn 3.2s 2.4s infinite; }
   @keyframes rsfloat { 50% { transform: translateY(-12px); } }
   @keyframes rsbtn { 0%, 70%, 100% { transform: scale(1); } 80% { transform: scale(1.04); } 90% { transform: scale(.99); } }
-  @media (max-width: 560px) { .rs-toast { display: none; } }
+  /* ---- RS mockup v2 polish ---- */
+  .flip .frame.rs .card::before { content: ""; position: absolute; inset: -6% -4%; z-index: 0; pointer-events: none; background: radial-gradient(46% 38% at 50% 46%, rgb(25 217 164 / .30), transparent 70%), radial-gradient(34% 30% at 82% 22%, rgb(124 92 255 / .34), transparent 70%), radial-gradient(34% 30% at 14% 84%, rgb(34 211 238 / .22), transparent 70%); filter: blur(14px); }
+  .flip .frame.rs .card::after { content: ""; position: absolute; width: min(100%, 372px); aspect-ratio: 1; border-radius: 50%; border: 1px solid rgb(94 236 196 / .16); box-shadow: 0 0 0 38px rgb(94 236 196 / .035), 0 0 0 76px rgb(94 236 196 / .02); pointer-events: none; }
+  .rsphone { z-index: 1; background: linear-gradient(155deg, #5b6f6a 0%, #1b2a27 22%, #0a1513 55%, #34504a 100%);
+             box-shadow: 0 70px 120px -20px rgba(0,0,0,.75), 0 0 80px -10px rgb(25 217 164 / .35), 0 0 0 1px rgba(150,255,225,.28), inset 0 0 0 2px rgba(255,255,255,.1), inset 0 0 0 7px #050c0b; }
+  .rsphone::before, .rsphone::after { content: ""; position: absolute; width: 3px; border-radius: 2px; background: linear-gradient(#52665f, #1b2a27); }
+  .rsphone::before { left: -3px; top: 20%; height: 9%; box-shadow: 0 54px 0 #2c3f3a; }
+  .rsphone::after { right: -3px; top: 27%; height: 15%; }
+  .rsphone .scr { background: linear-gradient(180deg, #eefaf5 0, #f7f7f1 38%); padding-top: 48px; padding-bottom: 66px; }
+  .rsphone .scr::before { content: "9:41"; position: absolute; top: 15px; left: 24px; font: 700 11px var(--body); color: #0e2a26; z-index: 4; }
+  .rsphone .scr::after { display: none; }
+  .rsphone .notch { top: 15px; width: 78px; height: 22px; margin-left: -39px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.05); }
+  .rsphone .notch::after { content: ""; position: absolute; right: 9px; top: 7px; width: 7px; height: 7px; border-radius: 50%; background: radial-gradient(circle, #2b4f7a, #07101a 70%); }
+  .rs-hero { box-shadow: 0 24px 40px -22px rgb(13 107 88 / .85), inset 0 1px 0 rgb(255 255 255 / .2), inset 0 0 0 1px rgb(255 255 255 / .05); }
+  .rs-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, rgba(255,255,255,.14), transparent 38%); pointer-events: none; }
+  .rs-card, .rs-tl { box-shadow: 0 14px 30px -22px rgb(16 90 75 / .6), 0 1px 0 #fff inset; border-color: #d4efe5; }
+  .rs-card .amt { font-size: 29px; }
+  .rs-card .cta { height: 40px; box-shadow: 0 12px 26px -10px rgba(24,214,160,.85), inset 0 1px 0 rgba(255,255,255,.5); }
+  .rs-tx > div { box-shadow: 0 8px 18px -16px rgb(16 90 75 / .6); border-color: #d9f0e7; }
+  .rs-nav { position: absolute; left: 12px; right: 12px; bottom: 12px; z-index: 4; display: flex; justify-content: space-around; align-items: center; padding: 7px 6px; border-radius: 22px; background: rgba(10,34,31,.92); box-shadow: 0 14px 28px -10px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.1); }
+  .rs-nav span { display: grid; justify-items: center; gap: 2px; min-width: 50px; padding: 4px 6px; border-radius: 15px; font-size: 8.5px; font-weight: 600; color: rgba(217,255,243,.6); }
+  .rs-nav span.on { background: linear-gradient(135deg, #5eecc4, #18d6a0); color: #04201c; }
+  .rs-toast { z-index: 5; right: clamp(-28px, -3vw, -6px); bottom: 24%; background: linear-gradient(135deg, rgba(10,46,41,.88), rgba(7,28,32,.9)); border-color: rgba(94,236,196,.5); box-shadow: 0 26px 50px -12px rgba(0,0,0,.65), 0 0 40px -8px rgb(25 217 164 / .45), inset 0 1px 0 rgba(255,255,255,.12); backdrop-filter: blur(14px); }
+  .rs-chip2 { position: absolute; z-index: 5; left: clamp(-30px, -3vw, -6px); top: 20%; display: flex; align-items: center; gap: 8px; padding: 8px 12px 8px 9px; border-radius: 14px; background: rgba(12,20,40,.82); border: 1px solid rgba(124,92,255,.5); color: #e5defe; font: 600 11px/1.25 var(--body); box-shadow: 0 22px 44px -12px rgba(0,0,0,.6), 0 0 36px -8px rgb(124 92 255 / .5); backdrop-filter: blur(14px); animation: rsfloat 8s 1.2s ease-in-out infinite reverse; }
+  .rs-chip2 i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #7c5cff, #22d3ee); color: #fff; flex: none; } .rs-chip2 em { display: block; font-style: normal; font-weight: 500; font-size: 10px; opacity: .7; }
+  @media (max-width: 560px) { .rs-toast, .rs-chip2 { display: none; } }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .hero h1 .w > span, .hero p.lede, .actions, .reveal { transform: none !important; opacity: 1 !important; }
@@ -706,8 +731,9 @@
                 <div><span class="ic ok"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></span><span class="m"><b>Rent · October</b><i>3 Oct</i></span><span class="r"><b>RM 275.00</b><u class="chip ok">Successful</u></span></div>
                 <div><span class="ic wait"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></span><span class="m"><b>Electricity · October</b><i>9 Oct</i></span><span class="r"><b>RM 62.40</b><u class="chip wait">Pending</u></span></div>
               </div>
-            </div>
+            <div class="rs-nav" aria-hidden="true"><span class="on"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Home</span><span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>Bills</span><span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>Reports</span><span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>Settings</span></div></div>
           </div>
+          <div class="rs-chip2" aria-hidden="true"><i><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></i><span>Secure payment<em>DuitNow · FPX</em></span></div>
           <div class="rs-toast" aria-hidden="true"><i><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></i><span><b>Payment confirmed</b>Rent · RM 275.00</span></div>
         </div>
       </div>
